@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="44dp"
+    android:height="44dp"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+    <!-- 公开壳的中性占位图标：一个便当盒网格符号，不含任何品牌素材 -->
+    <path
+        android:fillColor="#1266A8"
+        android:pathData="M4,4h17v17h-17z" />
+    <path
+        android:fillColor="#0C8A79"
+        android:pathData="M23,4h17v8h-17z" />
+    <path
+        android:fillColor="#96660F"
+        android:pathData="M23,14h17v7h-17z" />
+    <path
+        android:fillColor="#6A4C9C"
+        android:pathData="M4,23h36v17h-36z" />
+</vector>

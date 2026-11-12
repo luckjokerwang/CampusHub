@@ -1,0 +1,19 @@
+# Build
+build/
+.gradle/
+.kotlin/
+local.properties
+*.apk
+*.aab
+*.idsig
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# 本地产物
+*.log
+
+# Skill 评测工作区（本地临时，不入库）
+.skill-eval/
