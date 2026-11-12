@@ -18,11 +18,22 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # 不用 android-actions/setup-android：它固定安装已从 Google 仓库移除的
+      # `tools` 包，会直接失败。GitHub 的 ubuntu runner 已预装 Android SDK，
+      # 这里只补平台与构建工具，并接受许可。
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install platform 36
-        run: sdkmanager "platforms;android-36" "build-tools;35.0.0"
+        run: |
+          SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK_ROOT" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_ROOT" >> "$GITHUB_ENV"
+          SDKMGR="$(find "$SDK_ROOT" -name sdkmanager -type f | head -1)"
+          if [ -z "$SDKMGR" ]; then
+            echo "sdkmanager not found under $SDK_ROOT" >&2
+            exit 1
+          fi
+          echo "using $SDKMGR"
+          yes | "$SDKMGR" --licenses > /dev/null || true
+          "$SDKMGR" "platforms;android-36" "build-tools;35.0.0"
 
       - name: Guard against private service content
         run: bash scripts/check-no-private-content.sh
