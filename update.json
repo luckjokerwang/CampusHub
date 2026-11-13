@@ -1,16 +1,16 @@
 {
-  "versionCode": 14,
-  "versionName": "1.2.6",
+  "versionCode": 15,
+  "versionName": "1.2.7",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@latest/releases/app-1.2.6.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@latest/releases/app-1.2.6.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@latest/releases/app-1.2.6.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@latest/releases/app-1.2.6.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.6.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.6.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.7.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.7.apk"
   ],
-  "sha256": "d0fcaba90c9c65e7f946fe35e5b57adef5368da145d1a59ea771466888c049c2",
-  "size": 10801085,
+  "sha256": "a2df4e7918268960572bf41542761c3429df4d34ce221a250cc5f4828657ff66",
+  "size": 10801089,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.6\n\n## 修复：检查更新又慢又容易报错\n\n上一版把清单源做成了「一个失败再试下一个」。国内网络下这条路很难走通：\n每个源都要等满 15 秒超时，三个源串行就是 45 秒起步，最后报的还是最后一个源\n（`github.com`）的错，看不出真正卡在哪。\n\n这一版换成**并行竞速**：\n\n- 六个源（四个 jsDelivr 节点 + 两个 GitHub 原链）同时发起。\n  单源 5 秒超时，整体 8 秒必须给结论，不会再无限停在「正在检查更新…」。\n- 拿到第一个结果后再多等约 1 秒，取所有源里**版本号最高**的那份。\n  发版后 jsDelivr 会有一段时间返回缓存里的旧清单，只认「最先返回的」会让人看不到新版本。\n- 全部失败时，提示里优先显示主源（jsDelivr）的失败原因，而不是被 GitHub 的报错盖住。\n\n## 修复：直连失败后不回退代理\n\n之前只有 TLS 握手失败才会换下一路，超时和 DNS 失败直接放弃——\n开着代理也连不上更新服务器。现在任何连接层失败都会回退系统代理重试。\n\n## 修复：下载安装包会整包进内存\n\n改成流式写盘，边下边写，同时显示百分比进度：\n\n- 弱网下 10 MB 不会再因为一次读超时整包重来。\n- 下载失败会删掉半截文件，不会把截断的包交给校验器。"
+  "changelog": "# CampusHub 1.2.7\n\n## 修复：检查更新又慢又容易报错\n\n上一版把清单源做成了「一个失败再试下一个」。国内网络下这条路很难走通：\n每个源都要等满 15 秒超时，三个源串行就是 45 秒起步，最后报的还是最后一个源\n（`github.com`）的错，看不出真正卡在哪。\n\n这一版换成**并行竞速**：\n\n- 六个源（四个 jsDelivr 节点 + 两个 GitHub 原链）同时发起。\n  单源 5 秒超时，整体 8 秒必须给结论，不会再无限停在「正在检查更新…」。\n- 拿到第一个结果后再多等约 1 秒，取所有源里**版本号最高**的那份。\n  发版后 jsDelivr 会有一段时间返回缓存里的旧清单，只认「最先返回的」会让人看不到新版本。\n- 全部失败时，提示里优先显示主源（jsDelivr）的失败原因，而不是被 GitHub 的报错盖住。\n\n## 修复：直连失败后不回退代理\n\n之前只有 TLS 握手失败才会换下一路，超时和 DNS 失败直接放弃——\n开着代理也连不上更新服务器。现在任何连接层失败都会回退系统代理重试。\n\n## 修复：下载安装包会整包进内存\n\n改成流式写盘，边下边写，同时显示百分比进度：\n\n- 弱网下 10 MB 不会再因为一次读超时整包重来。\n- 每个镜像下完立刻比对哈希，内容不对就换下一个，不会把坏包交给你安装。\n- 下载失败会删掉半截文件，不会把截断的包交给校验器。"
 }
