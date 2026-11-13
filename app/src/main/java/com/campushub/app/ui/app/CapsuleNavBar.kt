@@ -45,8 +45,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.campushub.app.ui.components.clickableNoIndication
+import com.campushub.app.ui.components.pressable
 import com.campushub.app.ui.theme.CampusTheme
+import com.campushub.app.ui.theme.CampusSurfaces.cardDepth
 import com.campushub.app.ui.theme.CampusTokens
 
 /** 标签页索引。 */
@@ -95,8 +96,13 @@ fun GenericCapsuleNavBar(
             .navigationBarsPadding()
             .padding(horizontal = 20.dp, vertical = 18.dp)
             .height(64.dp)
+            .cardDepth(CampusTokens.Shapes.extraLarge)
             .background(palette.surface, CampusTokens.Shapes.extraLarge)
-            .border(1.dp, palette.line, CampusTokens.Shapes.extraLarge)
+            .border(
+                width = 1.dp,
+                color = palette.line.copy(alpha = CampusTokens.Depth.borderAlpha),
+                shape = CampusTokens.Shapes.extraLarge
+            )
             .padding(horizontal = 6.dp, vertical = 6.dp)
     ) {
         val availableWidth = maxWidth
@@ -134,7 +140,7 @@ fun GenericCapsuleNavBar(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .clickableNoIndication { onSelect(index) }
+                        .pressable(onClick = { onSelect(index) }, pressedScale = 0.94f)
                         .padding(vertical = 4.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center

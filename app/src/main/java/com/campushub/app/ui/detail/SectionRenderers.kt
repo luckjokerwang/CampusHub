@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -47,6 +46,7 @@ import com.campushub.app.core.plugin.RowAction
 import com.campushub.app.core.plugin.RowActionKind
 import com.campushub.app.core.plugin.RowItem
 import com.campushub.app.ui.components.CampusButton
+import com.campushub.app.ui.components.CampusSwitch
 import com.campushub.app.ui.components.CampusField
 import com.campushub.app.ui.components.ChipTone
 import com.campushub.app.ui.components.ListGroup
@@ -57,6 +57,7 @@ import com.campushub.app.ui.components.StatusChip
 import com.campushub.app.ui.components.color
 import com.campushub.app.ui.components.soft
 import com.campushub.app.ui.theme.CampusTheme
+import com.campushub.app.ui.theme.CampusSurfaces.cardDepth
 import com.campushub.app.ui.theme.CampusTokens
 
 /**
@@ -215,6 +216,7 @@ private fun ChartSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .cardDepth(CampusTokens.Shapes.medium)
             .background(palette.surface, CampusTokens.Shapes.medium)
             .padding(14.dp)
     ) {
@@ -479,13 +481,9 @@ private fun FormSection(
                             title = field.label,
                             subtitle = field.subtitle
                         ) {
-                            Switch(
+                            CampusSwitch(
                                 checked = section.values[field.key] == "true",
-                                onCheckedChange = { onFormChange(field.key, it.toString()) },
-                                colors = androidx.compose.material3.SwitchDefaults.colors(
-                                    checkedThumbColor = palette.surface,
-                                    checkedTrackColor = palette.water
-                                )
+                                onCheckedChange = { onFormChange(field.key, it.toString()) }
                             )
                         }
                     }

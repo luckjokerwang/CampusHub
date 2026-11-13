@@ -1,5 +1,6 @@
 package com.campushub.app.core.service
 
+import com.campushub.app.core.bridge.BridgeHttpResponse
 import com.campushub.app.core.model.BoundDevice
 import com.campushub.app.core.model.PluginCategory
 import com.campushub.app.core.model.WaterBillingRecord
@@ -76,6 +77,19 @@ inline fun <T, R> ServiceResult<T>.flatMap(transform: (T) -> ServiceResult<R>): 
         is ServiceResult.Unauthorized -> this
         is ServiceResult.BusinessError -> this
     }
+
+/**
+ * 非 2xx 响应的统一失败映射。
+ *
+ * 传输层失败（[BridgeHttpResponse.transportError] 非空）与网关返回错误状态码是两件事：
+ * 前者要说清 DNS / TLS / 超时的真实原因，后者才该报 HTTP 码。
+ * `status == -1` 是桥接层表示「没拿到响应」的哨兵值，不能当作 HTTP 状态码透给用户。
+ */
+fun BridgeHttpResponse.httpFailure(): ServiceResult.NetworkError =
+    ServiceResult.NetworkError(
+        message = transportError?.let { "网络不可达：$it" } ?: "网关响应错误 HTTP $status",
+        httpStatus = status.takeIf { it > 0 }
+    )
 
 /** 一次出水会话的启动结果，携带结算所需的水表基线。 */
 data class WaterSessionStart(

@@ -171,8 +171,23 @@ object CampusTokens {
         const val largeFontThreshold = 1.3f
     }
 
+    /** 层次：页面微渐变与卡片阴影。参数见 design/tokens.json 的 depth 段。 */
+    object Depth {
+        const val pageTintAlpha = 0.55f
+        const val pageTintStop = 0.38f
+        val shadowRest = 3.dp
+        val shadowRaised = 10.dp
+        const val shadowAlpha = 0.09f
+        const val shadowAlphaRaised = 0.14f
+        const val shadowAlphaDark = 0.5f
+        const val shadowAlphaRaisedDark = 0.65f
+        const val borderAlpha = 0.8f
+    }
+
     /** 动效时长（毫秒）。参数见 design/tokens.json 的 motion 段。 */
     object Motion {
+        const val readoutMs = 420L
+        const val stateTintMs = 320L
         const val borderBandMs = 2600L
         const val dropletBreathMs = 2200L
         const val dropletRippleMs = 1600L

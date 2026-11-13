@@ -7,7 +7,15 @@ import kotlinx.serialization.Serializable
 data class BridgeHttpResponse(
     val status: Int,
     val headers: Map<String, String> = emptyMap(),
-    val data: String = ""
+    val data: String = "",
+    /**
+     * 传输层失败原因（连接被拒、TLS 握手失败、超时…）。
+     *
+     * 非空时 [data] 一定是空串：**错误文本不能伪装成响应体**，
+     * 否则调用方会把 `{"error":"..."}` 当成网关返回的 JSON 去解析，
+     * 真实原因（DNS / TLS / 超时）就丢了，用户只看到「网关响应错误 HTTP -1」。
+     */
+    val transportError: String? = null
 )
 
 /**

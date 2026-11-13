@@ -1,9 +1,10 @@
 package com.campushub.app.ui.home.bento
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
@@ -53,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.draw.clipToBounds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,6 +89,7 @@ import com.campushub.app.ui.components.LocalLargeFont
 import com.campushub.app.ui.home.GlanceCard
 import com.campushub.app.ui.theme.CampusTheme
 import com.campushub.app.ui.theme.CampusTokens
+import com.campushub.app.ui.theme.CampusSurfaces.cardDepth
 
 /**
  * 便当盒网格单元：2 列 × N 行，支持 1×1 / 2×1(横) / 1×2(竖) / 2×2 四档跨度。
@@ -456,6 +459,8 @@ fun InteractiveBentoSection(
 
                     InteractiveBentoCard(
                         entry = cell.entry,
+                        // 入场错峰：每张卡按网格顺序延后 40ms，最多 320ms
+                        entranceIndex = cells.indexOf(cell),
                         glance = glanceFor(cardId),
                         spec = specFor(cardId),
                         col = cell.col,
@@ -680,6 +685,7 @@ private fun BoxScope.ResizeDot(
 @Composable
 private fun InteractiveBentoCard(
     entry: CardLayoutEntry,
+    entranceIndex: Int,
     glance: GlanceModel,
     spec: CardSpec,
     col: Int,
@@ -718,10 +724,14 @@ private fun InteractiveBentoCard(
         label = "jiggleAngle"
     )
 
+    // 按下反馈：卡片自己就是可点区域，缩一点点比涟漪更「跟手」
+    var pressed by remember { mutableStateOf(false) }
+
     val cardScale by animateFloatAsState(
         targetValue = when {
             isDragging -> 1.04f
             isEditMode -> 0.985f
+            pressed -> 0.975f
             else -> 1f
         },
         animationSpec = spring(
@@ -731,21 +741,28 @@ private fun InteractiveBentoCard(
         label = "cardScale"
     )
 
-    val cardElevation by animateDpAsState(
-        targetValue = when {
-            isDragging -> 12.dp
-            isEditMode -> 4.dp
-            else -> 2.dp
-        },
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label = "cardElevation"
-    )
+    // 入场：第一帧 alpha=0、下沉 10dp，按 entranceIndex 错峰上浮。只播一次。
+    val entrance = remember { Animatable(0f) }
+    val risePx = with(LocalDensity.current) { 10.dp.toPx() }
+    LaunchedEffect(Unit) {
+        delay((entranceIndex.coerceIn(0, 8) * 40).toLong())
+        entrance.animateTo(1f, tween(durationMillis = 260, easing = LinearOutSlowInEasing))
+    }
+
 
     // 手势分离：非编辑态不消费滑动，编辑态长按后跟手拖动
     // 关键：key 必须包含 isEditMode，否则进入编辑态时 Compose 不会重启手势块，导致未换位的卡片无法拖动！
     val gestureModifier = if (!isEditMode) {
         Modifier.pointerInput(entry.id, isEditMode) {
             detectTapGestures(
+                onPress = {
+                    pressed = true
+                    try {
+                        tryAwaitRelease()
+                    } finally {
+                        pressed = false
+                    }
+                },
                 onTap = { onTap() },
                 onLongPress = { onLongPressWake() }
             )
@@ -802,22 +819,29 @@ private fun InteractiveBentoCard(
                     else -> animTargetY - targetY
                 }
                 translationX = shiftX
-                translationY = shiftY
+                translationY = shiftY + (1f - entrance.value) * risePx
                 scaleX = cardScale
                 scaleY = cardScale
+                alpha = entrance.value
                 rotationZ = if (isEditMode && !isDragging) jiggleAngle else 0f
             }
             .then(gestureModifier)
     ) {
+        val cardShape = if (effectiveSize == BentoCardSize.HERO_2X2) {
+            CampusTokens.Shapes.large
+        } else {
+            CampusTokens.Shapes.medium
+        }
         Card(
             modifier = Modifier
                 .fillMaxSize()
+                // 阴影画在裁剪之前：clipToBounds 在链上更靠后，只裁内容不裁投影。
+                .cardDepth(
+                    shape = cardShape,
+                    raised = isDragging || isDropTarget || effectiveSize == BentoCardSize.HERO_2X2
+                )
                 .clipToBounds(),
-            shape = if (effectiveSize == BentoCardSize.HERO_2X2) {
-                CampusTokens.Shapes.large
-            } else {
-                CampusTokens.Shapes.medium
-            },
+            shape = cardShape,
             colors = CardDefaults.cardColors(
                 containerColor = if (isDropTarget) palette.waterSoft else palette.surface
             ),
@@ -826,7 +850,7 @@ private fun InteractiveBentoCard(
                 color = when {
                     isDragging || isDropTarget -> palette.water
                     isEditMode -> palette.water.copy(alpha = 0.5f)
-                    else -> palette.line
+                    else -> palette.line.copy(alpha = CampusTokens.Depth.borderAlpha)
                 }
             )
         ) {

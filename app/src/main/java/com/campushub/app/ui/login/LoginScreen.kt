@@ -37,6 +37,7 @@ import com.campushub.app.ui.components.IconGlyph
 import com.campushub.app.ui.components.PageHeader
 import com.campushub.app.ui.components.SegmentedControl
 import com.campushub.app.ui.theme.CampusTheme
+import com.campushub.app.ui.theme.CampusSurfaces.pageBackground
 import com.campushub.app.ui.theme.CampusTokens
 import kotlinx.coroutines.delay
 
@@ -78,7 +79,7 @@ fun LoginScreen(
 
     Column(modifier = Modifier
                 .fillMaxSize()
-                .background(CampusTheme.palette.canvas)) {
+                .pageBackground()) {
         PageHeader(
             title = if (addAccount) "添加账号" else "登录",
             onBack = onBack,

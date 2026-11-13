@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,6 +47,7 @@ import com.campushub.app.core.plugin.ConfigurablePlugin
 import com.campushub.app.core.service.ServiceResult
 import com.campushub.app.ui.components.CampusField
 import com.campushub.app.ui.components.CampusReadonlyField
+import com.campushub.app.ui.components.CampusSwitch
 import com.campushub.app.ui.components.FieldState
 import com.campushub.app.ui.components.ListGroup
 import com.campushub.app.ui.components.ListRow
@@ -154,7 +154,7 @@ fun ConfigFormRenderer(
                 ConfigFieldType.SWITCH -> {
                     ListGroup {
                         ListRow(title = field.label, subtitle = field.subtitle) {
-                            Switch(
+                            CampusSwitch(
                                 checked = value == "true",
                                 onCheckedChange = { onChange(field.key, it.toString()) },
                                 enabled = enabled

@@ -22,8 +22,9 @@ import com.campushub.app.core.plugin.PluginAccent
 import com.campushub.app.ui.components.ChipTone
 import com.campushub.app.ui.components.IconGlyph
 import com.campushub.app.ui.components.StatusChip
-import com.campushub.app.ui.components.clickableNoIndication
+import com.campushub.app.ui.components.pressable
 import com.campushub.app.ui.theme.CampusTheme
+import com.campushub.app.ui.theme.CampusSurfaces.cardDepth
 import com.campushub.app.ui.theme.CampusTokens
 
 /**
@@ -43,9 +44,14 @@ fun UnboundStrip(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .cardDepth(CampusTokens.Shapes.medium)
             .background(palette.surface, CampusTokens.Shapes.medium)
-            .border(1.dp, palette.line, CampusTokens.Shapes.medium)
-            .clickableNoIndication(onClick)
+            .border(
+                width = 1.dp,
+                color = palette.line.copy(alpha = CampusTokens.Depth.borderAlpha),
+                shape = CampusTokens.Shapes.medium
+            )
+            .pressable(onClick = onClick, pressedScale = 0.985f)
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)

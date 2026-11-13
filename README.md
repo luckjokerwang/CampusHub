@@ -11,6 +11,10 @@
 > 项目作者在 Releases 里提供签名 APK。那个二进制**包含未公开的校园服务适配器**
 > （真实网关地址、签名算法、会话状态机），与本仓库源码不等价。
 > 本仓库的源码可以独立编译、独立运行，但只有示例插件可用。
+>
+> 完整版的更新清单是仓库根目录的 `update.json`，安装包放在 `releases/`。
+> 客户端从这个文件读版本号与校验值，下载后比对 SHA-256 与签名证书才安装。
+> **这个仓库的源码构建出的包签名不同，不能通过那条更新链路升级。**
 
 ## 快速开始
 
@@ -19,7 +23,7 @@
 ```bash
 export ANDROID_HOME=/path/to/android-sdk      # 或写进 local.properties
 ./gradlew :app:compileDebugKotlin             # 先编译
-./gradlew :app:testDebugUnitTest              # 27 个单测，不联网
+./gradlew :app:testDebugUnitTest              # 30 个单测，不联网
 ./gradlew :app:assembleDebug                  # app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```

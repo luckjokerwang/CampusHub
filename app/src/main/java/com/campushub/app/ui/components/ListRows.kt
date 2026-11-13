@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.campushub.app.core.plugin.PluginAccent
 import com.campushub.app.ui.theme.CampusTheme
+import com.campushub.app.ui.theme.CampusSurfaces.cardDepth
 import com.campushub.app.ui.theme.CampusTokens
 
 /** 分组小标题（设计 `.sect`）。 */
@@ -45,8 +46,13 @@ fun ListGroup(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .cardDepth(CampusTokens.Shapes.medium)
             .background(palette.surface, CampusTokens.Shapes.medium)
-            .border(1.dp, palette.line, CampusTokens.Shapes.medium)
+            .border(
+                width = 1.dp,
+                color = palette.line.copy(alpha = CampusTokens.Depth.borderAlpha),
+                shape = CampusTokens.Shapes.medium
+            )
     ) {
         content()
     }

@@ -1,6 +1,9 @@
 package com.campushub.app.ui.home
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -23,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +39,6 @@ import kotlin.math.hypot
 import kotlin.math.sin
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -92,13 +95,33 @@ fun GlanceCard(
 
     // 出水中：竖向渐变（浅水色 → 白），与设计 `linear-gradient(180deg,#F2F8FD,#FFF)` 一致。
     // 不能用整块 waterSoft 铺底，否则同为 waterSoft 的状态 chip 会完全看不见。
-    val containerBrush = when (model.state) {
-        CardState.RUNNING -> Brush.verticalGradient(
-            listOf(spec.accent.soft().copy(alpha = 0.55f), palette.surface)
-        )
-        CardState.ERROR -> SolidColor(palette.dangerSoft)
-        else -> SolidColor(Color.Transparent)
-    }
+    //
+    // 状态切换做颜色过渡而不是硬切：idle → running → error 时底色渐变过去，
+    // 上/下两个色标一起动，error 的两端取同一个色所以看起来仍是纯色块。
+    val tintSpec = tween<Color>(
+        durationMillis = CampusTokens.Motion.stateTintMs.toInt(),
+        easing = FastOutSlowInEasing
+    )
+    val tintTop by animateColorAsState(
+        targetValue = when (model.state) {
+            CardState.RUNNING -> spec.accent.soft().copy(alpha = 0.55f)
+            CardState.ERROR -> palette.dangerSoft
+            // 同色相、零透明度：从透明黑过渡会让中间帧发灰
+            else -> spec.accent.soft().copy(alpha = 0f)
+        },
+        animationSpec = tintSpec,
+        label = "glanceTintTop"
+    )
+    val tintBottom by animateColorAsState(
+        targetValue = when (model.state) {
+            CardState.RUNNING -> palette.surface
+            CardState.ERROR -> palette.dangerSoft
+            else -> palette.surface.copy(alpha = 0f)
+        },
+        animationSpec = tintSpec,
+        label = "glanceTintBottom"
+    )
+    val containerBrush = Brush.verticalGradient(listOf(tintTop, tintBottom))
     val borderModifier = when {
         model.state == CardState.RUNNING -> Modifier.runningBand(spec.accent.color())
         model.state == CardState.ERROR -> Modifier.border(1.dp, palette.danger, CampusTokens.Shapes.medium)
@@ -201,7 +224,7 @@ fun GlanceCard(
             // ---- 读数行
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = model.readout ?: "—",
+                    text = animatedReadout(model.readout),
                     color = accent,
                     fontWeight = FontWeight.Bold,
                     fontSize = if (size == BentoCardSize.COMPACT_1X1) 20.sp else if (largeFont) 22.sp else 26.sp,
@@ -447,4 +470,28 @@ private fun Modifier.runningBand(accent: Color): Modifier {
             cornerRadius = corner
         )
     }
+}
+
+/**
+ * 主读数变化时滚到新值（[CampusTokens.Motion.readoutMs]）。
+ *
+ * 只有「一个数字 + 可选单位」才做动画：`—`、`未接入`、带千分位的串一律原样显示。
+ * 首次组合直接落在当前值，不播 0 → 3945 的假动画。
+ */
+@Composable
+private fun animatedReadout(raw: String?): String {
+    val parsed = remember(raw) { ReadoutFormat.parse(raw) } ?: return raw ?: "—"
+    val animated = remember { Animatable(parsed.value) }
+    LaunchedEffect(parsed.value) {
+        if (animated.value != parsed.value) {
+            animated.animateTo(
+                targetValue = parsed.value,
+                animationSpec = tween(
+                    durationMillis = CampusTokens.Motion.readoutMs.toInt(),
+                    easing = FastOutSlowInEasing
+                )
+            )
+        }
+    }
+    return ReadoutFormat.format(parsed, animated.value)
 }

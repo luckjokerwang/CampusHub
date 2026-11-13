@@ -52,12 +52,15 @@ import kotlin.coroutines.resume
  * 抓图失败时直接切换，不影响可用性。
  *
  * @param origin 扩散圆心（主题按钮中心，根坐标系）；null 时回落到右上角
+ * @param animate false 时主题直接切换、不抓图不扩散（对应「启动动画」关闭）。
+ *   它是数据参数而不是选树条件，避免调用方用 if/else 包住整棵树导致子树被重建。
  */
 @Composable
 fun ThemeReveal(
     darkTheme: Boolean,
     origin: Offset?,
     durationMillis: Int = 1200,
+    animate: Boolean = true,
     content: @Composable (Boolean) -> Unit
 ) {
     val view = LocalView.current
@@ -68,6 +71,10 @@ fun ThemeReveal(
 
     LaunchedEffect(darkTheme) {
         if (darkTheme == renderedDark) return@LaunchedEffect
+        if (!animate) {
+            renderedDark = darkTheme
+            return@LaunchedEffect
+        }
         // 用 PixelCopy 从 GPU 抓当前帧（~10ms）。软件重绘整棵 Compose 树要 1s 以上，会明显卡顿。
         val bitmap = captureWindow(view)
         if (bitmap == null) {
