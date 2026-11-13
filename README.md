@@ -91,12 +91,14 @@ app/src/main/java/com/campushub/app/
 
 ## 完整版 APK
 
-Releases 里的 `CampusBox-v<X.Y.Z>-release.apk` 是作者在私有仓库构建的签名包，
+Releases 里的 `releases/app-<X.Y.Z>.apk` 是作者在私有仓库构建的签名包，
 包含真实校园服务适配器。安装：
 
 ```bash
-adb install -r CampusBox-v1.2.0-release.apk
+adb install -r releases/app-1.2.7.apk
 ```
+
+文件名与 `update.json` 的 `versionName` 一致；应用内「检查更新」下载的也是这个文件。
 
 - 包名 `com.campushub.app`（与公开壳的 `com.campushub.shell` **不同**，两者可并存安装）
 - `minSdk 26`（Android 8.0）/ `targetSdk 35`
