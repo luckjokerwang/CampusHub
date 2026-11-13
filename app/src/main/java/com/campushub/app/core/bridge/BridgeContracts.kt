@@ -35,6 +35,27 @@ interface HttpBridge {
      * 默认实现返回 null：测试替身只需实现 [request] 即可继续工作。
      */
     suspend fun requestBytes(url: String, headers: Map<String, String>): ByteArray? = null
+
+    /**
+     * 把 [url] 流式下载到 [target]，返回是否成功。
+     *
+     * 大文件（应用内更新的 10 MB 安装包）必须走这里而不是 [requestBytes]：
+     * 后者把整包读进内存，弱网下既没有进度也容易 OOM。
+     * [onProgress] 收到 (已写字节, 总字节)，总字节未知时为 -1。
+     *
+     * 默认实现用 [requestBytes] 兜底，所以测试替身不必实现它。
+     */
+    suspend fun downloadTo(
+        url: String,
+        target: java.io.File,
+        onProgress: (Long, Long) -> Unit = { _, _ -> }
+    ): Boolean {
+        val bytes = requestBytes(url, emptyMap()) ?: return false
+        target.parentFile?.mkdirs()
+        target.writeBytes(bytes)
+        onProgress(bytes.size.toLong(), bytes.size.toLong())
+        return true
+    }
 }
 
 /**

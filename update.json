@@ -1,13 +1,16 @@
 {
-  "versionCode": 13,
-  "versionName": "1.2.5",
+  "versionCode": 14,
+  "versionName": "1.2.6",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@main/releases/app-1.2.5.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.5.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.5.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@main/releases/app-1.2.6.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@main/releases/app-1.2.6.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@main/releases/app-1.2.6.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@main/releases/app-1.2.6.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.6.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.6.apk"
   ],
-  "sha256": "61eaf3bc26288f9244a0111e7f06c051b6b29dfee724b6d1b7071fcdb0e1c754",
+  "sha256": "efb77795eb320a6147c0c656e1f71801ff9db6bdd45d5ccc800d812c76c9c328",
   "size": 10784701,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.5\n\n## 新增：应用内更新\n\n「我的 → 关于 CampusHub」里多了「检查更新」。以后不用再手动找安装包。\n\n- 版本清单走 jsDelivr 的 `gh/` 通道，GitHub 原链作为兜底，国内网络下更容易连上。\n- 下载完会做三重校验：SHA-256、包名、**签名证书**。任一项不符直接丢弃，\n  不会把来路不明的包交给你安装。\n- 安装走系统 `PackageInstaller`，覆盖安装后登录状态与设备绑定都保留。\n- 首次安装需要允许「安装未知应用」；装完可以在系统设置里把该权限关掉。\n\n> 调试包（包名带 `.debug`）不参与自动更新——它的签名与正式版不同，装不上去。\n\n## 修复\n\n**设置页**\n- 修好「启动动画」开关关闭态看不清滑块的问题：之前轨道、描边、滑块是同一个颜色。\n- 修好点一下设置开关就跳回控制台的问题：切换开关会让整个界面重建、导航重置。\n\n**出水与账号**\n- 洗浴热水出水中切换账号现在会被拦住（之前只拦饮用水，切号会让结算记到新账号上）。\n- 从桌面快捷方式或 `campushub://` 链接打开确认页时，链接里的设备号必须属于当前账号，\n  否则改用已绑定设备并在页面上说明。\n\n**钱包充值**\n- 支付宝付款成功后，会真正去服务端核对这笔订单。之前不管结果如何都显示「充值成功」，\n  余额没到账也看不出来。\n\n**错误提示**\n- 网络不通时不再显示「网关响应错误 HTTP -1」，改为显示真实原因（超时、DNS、TLS 等）。\n- 直连失败后会改用系统代理重试。之前只有 TLS 握手失败才换路，超时和 DNS 失败\n  直接放弃——开着代理也连不上更新服务器。\n\n**乐校通**\n- 账单时间按北京时间解析，不再随手机时区偏移。\n\n## 其它\n- 移除两个未使用的依赖。\n- 单测从 296 例增至 326 例。"
+  "changelog": "# CampusHub 1.2.6\n\n## 修复：检查更新又慢又容易报错\n\n上一版把清单源做成了「一个失败再试下一个」。国内网络下这条路很难走通：\n每个源都要等满 15 秒超时，三个源串行就是 45 秒起步，最后报的还是最后一个源\n（`github.com`）的错，看不出真正卡在哪。\n\n这一版换成**并行竞速**：\n\n- 六个源（四个 jsDelivr 节点 + 两个 GitHub 原链）同时发起，谁先回用谁。\n  正常网络下 1 秒内出结果。\n- 单个源 5 秒超时，整体 8 秒必须给结论。不会再无限停在「正在检查更新…」。\n- 全部失败时，提示里优先显示主源（jsDelivr）的失败原因，而不是被 GitHub 的报错盖住。\n\n## 修复：直连失败后不回退代理\n\n之前只有 TLS 握手失败才会换下一路，超时和 DNS 失败直接放弃——\n开着代理也连不上更新服务器。现在任何连接层失败都会回退系统代理重试。\n\n## 修复：下载安装包会整包进内存\n\n改成流式写盘，边下边写，同时显示百分比进度：\n\n- 弱网下 10 MB 不会再因为一次读超时整包重来。\n- 下载失败会删掉半截文件，不会把截断的包交给校验器。"
 }
