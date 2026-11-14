@@ -1,16 +1,16 @@
 {
-  "versionCode": 17,
-  "versionName": "1.2.9",
+  "versionCode": 18,
+  "versionName": "1.2.10",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.9.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.9.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.10.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.10.apk"
   ],
-  "sha256": "1f404a55251e5e41455e2f7392795a4c8f64049238b1fb15efab42c1cefc46c7",
-  "size": 10801129,
+  "sha256": "ff4d894a1753df397b065ebe802796ae89e48f6d3d27cd6da5f6d42eb07cfe3e",
+  "size": 10801133,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.9\n\n## 修复：更新包下载太慢、没有进度条\n\n用户实测 10 MB 更新包停在「正在下载 v1.2.8…」五六分钟，没有进度条。排查发现两层问题：\n\n- 本机实测主 CDN 完整下载耗时约 150 秒，多个备用镜像直接 TLS 断开；旧实现按 URL 串行回退，会把慢/坏镜像的等待逐个叠加。\n- 下载弹窗只有文本，且 `Content-Length` 未知时百分比为空；用户无法判断是在下载、换镜像还是已经卡住。\n\n### 修复内容\n\n- `ApkDownloader` 改为**多镜像并行竞速**：所有下载地址同时发起，首个完成且通过 SHA-256 的文件胜出，其余请求立即取消；慢镜像不再拖住快镜像。\n- 单个下载路由增加 30 秒墙钟上限；非 2xx、空 body、I/O 失败会继续尝试下一条路由，不再直接结束整个下载。\n- 总下载超时 120 秒；失败时给出具体原因，例如「镜像 3/6：镜像内容与清单不一致」或「下载超时：已并行尝试 6 个镜像」，并删除所有半截文件。\n- 下载协程在每次读取块边界检查取消状态；「取消」按钮可终止竞速请求。\n- 更新弹窗新增 `LinearProgressIndicator`、百分比、已下载/总字节数、当前镜像序号；未知总大小时显示不确定进度条和已下载 MB。\n- 「我的 → 应用更新 → 检查更新」列表行同步显示下载百分比、已下载 MB 和镜像序号。\n- 镜像切换、HTTP 状态、路由失败和最终错误写入 App 内诊断日志，可从「关于 → 导出诊断日志」分享排查。\n\n### 不变\n\n- 仍保留逐镜像 SHA-256、`ApkVerifier` 包名/签名/大小校验。\n- 不跳 GitHub 页面，不后台下载，不静默安装；系统安装确认与首次「安装未知应用」授权仍由用户完成。\n\n## 验证\n\n- `:app:compileDebugKotlin` 通过。\n- `:app:testDebugUnitTest`：**342 例 / 33 个测试类 / 32 文件，0 failures / 0 errors / 0 skipped**。\n- 新增回归测试：慢镜像不拖住快镜像、失败镜像并行回退、进度包含字节数与镜像信息、全部错误内容被拒绝且不留残包。\n- JDK 17 `assembleRelease` 通过；签名证书 SHA-256 `80b62415…fcbbe`、zipalign、badging 均校验通过。\n- `git diff --check` 通过。\n\n## 已知未修\n\n积分账号通道 `1,5` 仍被官方支付宝小程序 `openCode` 校验拦截；上游开源客户端也没有可移植修复。设备登录与设备 token 积分任务不受影响。"
+  "changelog": "# CampusHub 1.2.10\n\n## 修复：刚发版时检查更新误报「已是最新版本」\n\n用户在 1.2.8 上检查不到 1.2.9，但 GitHub tag、`update.json`、APK CDN 均已生效。诊断日志与线上实测确认：\n\n- jsDelivr 不带 ref 的清单仍缓存 1.2.8；部分节点甚至缓存 1.2.7。\n- `@main`、GitHub raw、`github.com/raw` 已是 1.2.9，但 1.2.8 的聚合窗口只有 0.8 秒，GitHub raw 可能来不及返回。\n- 只要那一刻快速可达的 CDN 节点都返回旧清单，客户端就会把旧 versionCode 当成最新。\n- 1.2.7 能更新到 1.2.8，是因为当时不带 ref 的 jsDelivr 已刷新到 1.2.8；这是缓存节点状态不同，不是版本升级逻辑有差异。\n\n### 修复内容\n\n- `UpdateFeedClient` 先读取 GitHub `git/ref/heads/main`，实时解析当前 commit SHA。\n- 用该 SHA 生成不可变清单地址：`@<sha>/update.json`、`raw/<sha>/update.json`；同时请求带 fresh token 的 raw 清单。\n- 这些新鲜源与原有 10 个 CDN/raw 兜底源一起并行竞速，取最高 `versionCode`。\n- 聚合窗口从 0.8 秒增至 2.5 秒，避免 GitHub raw 略慢时被陈旧 CDN 抢答。\n- GitHub ref API 不可达时自动退回旧 10 源；仍取最高 versionCode，不会比旧版差。\n- HEAD SHA 解析结果写入 App 内诊断日志，便于后续判断新鲜度锚点是否生效。\n\n### 不需要每次硬编码\n\n发版不用再改客户端清单地址：客户端动态查询当前 `main` HEAD SHA，APK 地址仍由 `update.json` 钉在不可变版本 tag 上。`gen_update_json.sh` 无需写死新版本号到客户端代码。\n\n## 验证\n\n- `:app:compileDebugKotlin` 通过。\n- `:app:testDebugUnitTest`：**343 例 / 33 个测试类 / 32 文件，0 failures / 0 errors / 0 skipped**。\n- 新增回归测试：HEAD SHA 解析、不可变 SHA 清单覆盖陈旧分支缓存、HEAD ref 失败回落、并发源数量。\n- 线上实测 GitHub ref API 返回当前 SHA；按 SHA 的 raw/jsDelivr 清单均返回 `versionCode 17 / 1.2.9`。\n- JDK 17 `assembleRelease` 通过；签名、zipalign、badging、DEX 本机路径与 `git diff --check` 均校验通过。\n\n## 已知未修\n\n积分账号通道 `1,5` 仍被官方支付宝小程序 `openCode` 校验拦截；上游开源客户端也没有可移植修复。设备登录与设备 token 积分任务不受影响。"
 }

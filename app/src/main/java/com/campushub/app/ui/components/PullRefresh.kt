@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,6 +79,8 @@ fun CampusPullRefresh(
     val pullOffset = remember { Animatable(0f) }
     var readyHaptic by remember { mutableStateOf(false) }
     var completed by remember { mutableStateOf(false) }
+    val currentOnRefresh by rememberUpdatedState(onRefresh)
+    val interactionLocked by rememberUpdatedState(isRefreshing || completed)
 
     // 刷新期间圆圈持续打转
     val spin = rememberInfiniteTransition(label = "pullSpin")
@@ -100,9 +103,9 @@ fun CampusPullRefresh(
             if (pullOffset.value > 1f) {
                 completed = true
                 delay(520L)
-                completed = false
             }
             pullOffset.animateTo(0f, spring(stiffness = 600f))
+            completed = false
             readyHaptic = false
         }
     }
@@ -127,8 +130,10 @@ fun CampusPullRefresh(
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 if (available.y < 0 && pullOffset.value > 0f) {
-                    val next = (pullOffset.value + available.y).coerceAtLeast(0f)
-                    scope.launch { pullOffset.snapTo(next) }
+                    if (!interactionLocked) {
+                        val next = (pullOffset.value + available.y).coerceAtLeast(0f)
+                        scope.launch { pullOffset.snapTo(next) }
+                    }
                     return Offset(0f, available.y)
                 }
                 return Offset.Zero
@@ -139,7 +144,7 @@ fun CampusPullRefresh(
                 available: Offset,
                 source: NestedScrollSource
             ): Offset {
-                if (available.y > 0f && !isRefreshing) {
+                if (available.y > 0f && !interactionLocked) {
                     val next = (pullOffset.value + available.y * 0.45f).coerceAtMost(maxDragPx)
                     scope.launch { pullOffset.snapTo(next) }
                     if (next >= thresholdPx && !readyHaptic) {
@@ -154,9 +159,9 @@ fun CampusPullRefresh(
             }
 
             override suspend fun onPreFling(available: Velocity): Velocity {
-                if (!isRefreshing) {
+                if (!interactionLocked) {
                     if (pullOffset.value >= thresholdPx) {
-                        onRefresh()
+                        currentOnRefresh()
                     } else {
                         pullOffset.animateTo(0f, spring(stiffness = 700f))
                         readyHaptic = false
