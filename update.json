@@ -1,16 +1,16 @@
 {
-  "versionCode": 16,
-  "versionName": "1.2.8",
+  "versionCode": 17,
+  "versionName": "1.2.9",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.8.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.8.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.9/releases/app-1.2.9.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.9.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.9.apk"
   ],
-  "sha256": "73cd4df9fb9f080da8bee2da101fb59fd8aba8bc93cf8ca7b73cf9385cc8fa67",
+  "sha256": "1f404a55251e5e41455e2f7392795a4c8f64049238b1fb15efab42c1cefc46c7",
   "size": 10801129,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.8\n\n## 新增：更新设置不再藏在「关于」里\n\n「我的」新增独立的 **应用更新** 分组：\n\n- **自动检查更新**：可选 关闭 / 每次打开应用 / 每天一次 / 每周一次，默认每天一次。\n- **检查更新**：独立手动入口，显示检查中、已是最新或失败原因，不需要先打开「关于 CampusHub」。\n- **发现新版本弹窗**：App 打开或回到前台按所选频率检查，发现新版本后显示版本号和更新说明。\n- **立即更新**：自动完成镜像下载、SHA-256 校验、包名与签名证书校验，再唤起系统安装器；不跳 GitHub 页面。\n- **稍后**：同一版本不再自动弹窗；手动检查仍可重新查看，更高版本会正常提醒。\n\n自动检查只读取版本清单，不后台下载、不自动安装。Android 的系统安装确认和首次「安装未知应用」授权仍由用户完成，无法也不尝试绕过。\n\n## 新增：release 也能导出诊断日志\n\ndebug/release 都保留本机滚动日志；release 在「我的 → 关于 CampusHub → 导出诊断日志」通过系统分享面板发送。日志不自动上传，记录的内容不含手机号、短信码、token、Authorization、验证码 key 或请求 body。\n\n## 修复：更新清单竞速与取消\n\n保留十源并行竞速、2.5 秒单源链、0.8 秒聚合窗口和取最高 versionCode；调用方取消能传到子请求，阻塞 I/O 不再拖住检查结果。\n\n## 验证\n\n- `:app:compileDebugKotlin` 通过。\n- `:app:testDebugUnitTest`：**341 例 / 33 个测试类 / 32 文件，0 failures / 0 errors / 0 skipped**。\n- JDK 17 `assembleRelease` 通过；签名证书 SHA-256 `80b62415…fcbbe`、zipalign、badging 均校验通过。\n- `git diff --check` 通过。\n\n积分账号通道 `1,5` 仍被官方支付宝小程序 `openCode` 校验拦截；上游开源客户端也没有可移植修复。设备登录与设备 token 积分任务不受影响。"
+  "changelog": "# CampusHub 1.2.9\n\n## 修复：更新包下载太慢、没有进度条\n\n用户实测 10 MB 更新包停在「正在下载 v1.2.8…」五六分钟，没有进度条。排查发现两层问题：\n\n- 本机实测主 CDN 完整下载耗时约 150 秒，多个备用镜像直接 TLS 断开；旧实现按 URL 串行回退，会把慢/坏镜像的等待逐个叠加。\n- 下载弹窗只有文本，且 `Content-Length` 未知时百分比为空；用户无法判断是在下载、换镜像还是已经卡住。\n\n### 修复内容\n\n- `ApkDownloader` 改为**多镜像并行竞速**：所有下载地址同时发起，首个完成且通过 SHA-256 的文件胜出，其余请求立即取消；慢镜像不再拖住快镜像。\n- 单个下载路由增加 30 秒墙钟上限；非 2xx、空 body、I/O 失败会继续尝试下一条路由，不再直接结束整个下载。\n- 总下载超时 120 秒；失败时给出具体原因，例如「镜像 3/6：镜像内容与清单不一致」或「下载超时：已并行尝试 6 个镜像」，并删除所有半截文件。\n- 下载协程在每次读取块边界检查取消状态；「取消」按钮可终止竞速请求。\n- 更新弹窗新增 `LinearProgressIndicator`、百分比、已下载/总字节数、当前镜像序号；未知总大小时显示不确定进度条和已下载 MB。\n- 「我的 → 应用更新 → 检查更新」列表行同步显示下载百分比、已下载 MB 和镜像序号。\n- 镜像切换、HTTP 状态、路由失败和最终错误写入 App 内诊断日志，可从「关于 → 导出诊断日志」分享排查。\n\n### 不变\n\n- 仍保留逐镜像 SHA-256、`ApkVerifier` 包名/签名/大小校验。\n- 不跳 GitHub 页面，不后台下载，不静默安装；系统安装确认与首次「安装未知应用」授权仍由用户完成。\n\n## 验证\n\n- `:app:compileDebugKotlin` 通过。\n- `:app:testDebugUnitTest`：**342 例 / 33 个测试类 / 32 文件，0 failures / 0 errors / 0 skipped**。\n- 新增回归测试：慢镜像不拖住快镜像、失败镜像并行回退、进度包含字节数与镜像信息、全部错误内容被拒绝且不留残包。\n- JDK 17 `assembleRelease` 通过；签名证书 SHA-256 `80b62415…fcbbe`、zipalign、badging 均校验通过。\n- `git diff --check` 通过。\n\n## 已知未修\n\n积分账号通道 `1,5` 仍被官方支付宝小程序 `openCode` 校验拦截；上游开源客户端也没有可移植修复。设备登录与设备 token 积分任务不受影响。"
 }
