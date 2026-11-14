@@ -1,16 +1,16 @@
 {
-  "versionCode": 15,
-  "versionName": "1.2.7",
+  "versionCode": 16,
+  "versionName": "1.2.8",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.7/releases/app-1.2.7.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.7.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.7.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.8/releases/app-1.2.8.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.8.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.8.apk"
   ],
-  "sha256": "a2df4e7918268960572bf41542761c3429df4d34ce221a250cc5f4828657ff66",
-  "size": 10801089,
+  "sha256": "73cd4df9fb9f080da8bee2da101fb59fd8aba8bc93cf8ca7b73cf9385cc8fa67",
+  "size": 10801129,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.7\n\n## 修复：检查更新又慢又容易报错\n\n上一版把清单源做成了「一个失败再试下一个」。国内网络下这条路很难走通：\n每个源都要等满 15 秒超时，三个源串行就是 45 秒起步，最后报的还是最后一个源\n（`github.com`）的错，看不出真正卡在哪。\n\n这一版换成**并行竞速**：\n\n- 六个源（四个 jsDelivr 节点 + 两个 GitHub 原链）同时发起。\n  单源 5 秒超时，整体 8 秒必须给结论，不会再无限停在「正在检查更新…」。\n- 拿到第一个结果后再多等约 1 秒，取所有源里**版本号最高**的那份。\n  发版后 jsDelivr 会有一段时间返回缓存里的旧清单，只认「最先返回的」会让人看不到新版本。\n- 全部失败时，提示里优先显示主源（jsDelivr）的失败原因，而不是被 GitHub 的报错盖住。\n\n## 修复：直连失败后不回退代理\n\n之前只有 TLS 握手失败才会换下一路，超时和 DNS 失败直接放弃——\n开着代理也连不上更新服务器。现在任何连接层失败都会回退系统代理重试。\n\n## 修复：下载安装包会整包进内存\n\n改成流式写盘，边下边写，同时显示百分比进度：\n\n- 弱网下 10 MB 不会再因为一次读超时整包重来。\n- 每个镜像下完立刻比对哈希，内容不对就换下一个，不会把坏包交给你安装。\n- 下载失败会删掉半截文件，不会把截断的包交给校验器。"
+  "changelog": "# CampusHub 1.2.8\n\n## 新增：更新设置不再藏在「关于」里\n\n「我的」新增独立的 **应用更新** 分组：\n\n- **自动检查更新**：可选 关闭 / 每次打开应用 / 每天一次 / 每周一次，默认每天一次。\n- **检查更新**：独立手动入口，显示检查中、已是最新或失败原因，不需要先打开「关于 CampusHub」。\n- **发现新版本弹窗**：App 打开或回到前台按所选频率检查，发现新版本后显示版本号和更新说明。\n- **立即更新**：自动完成镜像下载、SHA-256 校验、包名与签名证书校验，再唤起系统安装器；不跳 GitHub 页面。\n- **稍后**：同一版本不再自动弹窗；手动检查仍可重新查看，更高版本会正常提醒。\n\n自动检查只读取版本清单，不后台下载、不自动安装。Android 的系统安装确认和首次「安装未知应用」授权仍由用户完成，无法也不尝试绕过。\n\n## 新增：release 也能导出诊断日志\n\ndebug/release 都保留本机滚动日志；release 在「我的 → 关于 CampusHub → 导出诊断日志」通过系统分享面板发送。日志不自动上传，记录的内容不含手机号、短信码、token、Authorization、验证码 key 或请求 body。\n\n## 修复：更新清单竞速与取消\n\n保留十源并行竞速、2.5 秒单源链、0.8 秒聚合窗口和取最高 versionCode；调用方取消能传到子请求，阻塞 I/O 不再拖住检查结果。\n\n## 验证\n\n- `:app:compileDebugKotlin` 通过。\n- `:app:testDebugUnitTest`：**341 例 / 33 个测试类 / 32 文件，0 failures / 0 errors / 0 skipped**。\n- JDK 17 `assembleRelease` 通过；签名证书 SHA-256 `80b62415…fcbbe`、zipalign、badging 均校验通过。\n- `git diff --check` 通过。\n\n积分账号通道 `1,5` 仍被官方支付宝小程序 `openCode` 校验拦截；上游开源客户端也没有可移植修复。设备登录与设备 token 积分任务不受影响。"
 }
