@@ -1,16 +1,16 @@
 {
-  "versionCode": 18,
-  "versionName": "1.2.10",
+  "versionCode": 19,
+  "versionName": "1.2.11",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.10/releases/app-1.2.10.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.10.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.10.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.11.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.11.apk"
   ],
-  "sha256": "ff4d894a1753df397b065ebe802796ae89e48f6d3d27cd6da5f6d42eb07cfe3e",
-  "size": 10801133,
+  "sha256": "38d44eb70bf173d6aa10b497137ddfb78c1ae7edcaba560d3135bcb6571eafb3",
+  "size": 10817513,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.10\n\n## 修复：刚发版时检查更新误报「已是最新版本」\n\n用户在 1.2.8 上检查不到 1.2.9，但 GitHub tag、`update.json`、APK CDN 均已生效。诊断日志与线上实测确认：\n\n- jsDelivr 不带 ref 的清单仍缓存 1.2.8；部分节点甚至缓存 1.2.7。\n- `@main`、GitHub raw、`github.com/raw` 已是 1.2.9，但 1.2.8 的聚合窗口只有 0.8 秒，GitHub raw 可能来不及返回。\n- 只要那一刻快速可达的 CDN 节点都返回旧清单，客户端就会把旧 versionCode 当成最新。\n- 1.2.7 能更新到 1.2.8，是因为当时不带 ref 的 jsDelivr 已刷新到 1.2.8；这是缓存节点状态不同，不是版本升级逻辑有差异。\n\n### 修复内容\n\n- `UpdateFeedClient` 先读取 GitHub `git/ref/heads/main`，实时解析当前 commit SHA。\n- 用该 SHA 生成不可变清单地址：`@<sha>/update.json`、`raw/<sha>/update.json`；同时请求带 fresh token 的 raw 清单。\n- 这些新鲜源与原有 10 个 CDN/raw 兜底源一起并行竞速，取最高 `versionCode`。\n- 聚合窗口从 0.8 秒增至 2.5 秒，避免 GitHub raw 略慢时被陈旧 CDN 抢答。\n- GitHub ref API 不可达时自动退回旧 10 源；仍取最高 versionCode，不会比旧版差。\n- HEAD SHA 解析结果写入 App 内诊断日志，便于后续判断新鲜度锚点是否生效。\n\n### 不需要每次硬编码\n\n发版不用再改客户端清单地址：客户端动态查询当前 `main` HEAD SHA，APK 地址仍由 `update.json` 钉在不可变版本 tag 上。`gen_update_json.sh` 无需写死新版本号到客户端代码。\n\n## 验证\n\n- `:app:compileDebugKotlin` 通过。\n- `:app:testDebugUnitTest`：**343 例 / 33 个测试类 / 32 文件，0 failures / 0 errors / 0 skipped**。\n- 新增回归测试：HEAD SHA 解析、不可变 SHA 清单覆盖陈旧分支缓存、HEAD ref 失败回落、并发源数量。\n- 线上实测 GitHub ref API 返回当前 SHA；按 SHA 的 raw/jsDelivr 清单均返回 `versionCode 17 / 1.2.9`。\n- JDK 17 `assembleRelease` 通过；签名、zipalign、badging、DEX 本机路径与 `git diff --check` 均校验通过。\n\n## 已知未修\n\n积分账号通道 `1,5` 仍被官方支付宝小程序 `openCode` 校验拦截；上游开源客户端也没有可移植修复。设备登录与设备 token 积分任务不受影响。"
+  "changelog": "# CampusHub 1.2.11\n\n校园百宝箱饮用水卡「启动延时」直达化，慧积分任务日志更好读。\n\n## 新增 / 改动\n\n- **饮用水卡 chip 直达延时设置**：右上角「延时 10s / 立即开阀」现在可点，弹出 0 / 5 / 10 / 15 / 20 / 30 秒单选，选中即生效。\n  - 0 秒 = 立即开阀，不再需要先关掉「延时启动」开关。\n  - 卡片、设备管理页、桌面快捷方式、deep link 确认页读同一份设置，文案一致。\n  - 仍是纯本地倒计时，不改变开水请求，不影响真实出水与结算。\n- **慧积分任务日志结构化**：长日志不再被一行截断，按「内容 / 账号·状态 / 成功·失败·进行中标记 / +N 分」分行显示。\n  - 整页配色与首页积分卡统一，KPI 卡片补齐层次。\n  - 不编造时间戳（源日志里没有时间字段）。\n\n## 验证\n\n- 单测 356 例 / 35 个测试类全绿；编译通过。\n- JDK 17 release 签名、zipalign、版本号与证书指纹校验通过。\n\n## 说明\n\n- 本轮未改动 `/dev/start` 协议参数、会话状态机取消与幂等逻辑。\n- 「积分代付 / 开启自动抵扣」官方小程序开关未被逆向到接口，本版不含该功能。"
 }

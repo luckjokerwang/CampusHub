@@ -8,6 +8,9 @@ package com.campushub.app.core.plugin
 /** 记录行金额的语气：收入（water）/ 支出（score）/ 中性。 */
 enum class AmountTone { IN, OUT, NEUTRAL }
 
+/** 行尾 badge 的语义色（宿主映射成 ChipTone，避免 core 依赖 ui）。 */
+enum class RowBadgeTone { NEUTRAL, POSITIVE, NEGATIVE, PROGRESS }
+
 /** 行内动作的交互方式。 */
 enum class RowActionKind {
     /** 直接执行。 */
@@ -34,7 +37,10 @@ data class RowItem(
     val amount: String? = null,
     val tone: AmountTone = AmountTone.NEUTRAL,
     val badge: String? = null,
-    val actions: List<RowAction> = emptyList()
+    val badgeTone: RowBadgeTone = RowBadgeTone.NEUTRAL,
+    val actions: List<RowAction> = emptyList(),
+    /** 长文本换行显示（日志行用），默认仍单行省略，不影响其他调用方。 */
+    val wrapTitle: Boolean = false
 )
 
 data class KpiItem(val label: String, val value: String, val unit: String? = null)
@@ -78,6 +84,8 @@ enum class DetailNavIcon { STATS, DEVICES, TASKS, ACCOUNT, CREDIT, OVERVIEW }
  * @param headerAction 页头右侧动作（如「添加」「导出」）。
  * @param actions 底部按钮，最多 2 个。
  * @param note 页面末尾的说明文字。
+ * @param accent 该页强调色；null 时沿用插件 manifest 的 accent。
+ *   同一插件内子功能色不同（如慧生活里的「慧积分任务」用 SCORE 而非 WATER）时指定。
  */
 data class DetailPage(
     val id: String,
@@ -87,5 +95,6 @@ data class DetailPage(
     val actions: List<PageAction> = emptyList(),
     val note: String? = null,
     val navLabel: String = title,
-    val navIcon: DetailNavIcon = DetailNavIcon.OVERVIEW
+    val navIcon: DetailNavIcon = DetailNavIcon.OVERVIEW,
+    val accent: PluginAccent? = null
 )

@@ -46,6 +46,7 @@ import com.campushub.app.core.plugin.RowAction
 import com.campushub.app.core.plugin.RowActionKind
 import com.campushub.app.core.plugin.RowItem
 import com.campushub.app.ui.components.CampusButton
+import com.campushub.app.core.plugin.RowBadgeTone
 import com.campushub.app.ui.components.CampusSwitch
 import com.campushub.app.ui.components.CampusField
 import com.campushub.app.ui.components.ChipTone
@@ -77,7 +78,7 @@ fun DetailSectionContent(
     when (section) {
         is DetailSection.Kpi -> KpiSection(section.items, section.highlight, accent, modifier)
         is DetailSection.Chart -> ChartSection(section.title, section.summary, section.bars, accent, modifier)
-        is DetailSection.Records -> RecordsSection(section, onCommand, modifier)
+        is DetailSection.Records -> RecordsSection(section, accent, onCommand, modifier)
         is DetailSection.Form -> FormSection(section, onFormChange, modifier)
     }
 }
@@ -95,6 +96,7 @@ private fun KpiSection(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .cardDepth(CampusTokens.Shapes.medium)
                     .background(accent.soft(), CampusTokens.Shapes.medium)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -297,6 +299,7 @@ private fun ChartSection(
 @Composable
 private fun RecordsSection(
     section: DetailSection.Records,
+    accent: PluginAccent,
     onCommand: (commandId: String, rowId: String?, input: String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -333,6 +336,7 @@ private fun RecordsSection(
                     ListRow(
                         title = row.title,
                         subtitle = row.sub,
+                        wrapTitle = row.wrapTitle,
                         onClick = if (row.actions.isNotEmpty()) {
                             { actionRow = row }
                         } else {
@@ -340,7 +344,15 @@ private fun RecordsSection(
                         }
                     ) {
                         if (!row.badge.isNullOrBlank()) {
-                            StatusChip(text = row.badge, tone = ChipTone.LINE)
+                            StatusChip(
+                                text = row.badge,
+                                tone = when (row.badgeTone) {
+                                    RowBadgeTone.POSITIVE -> ChipTone.TINT
+                                    RowBadgeTone.NEGATIVE -> ChipTone.DANGER
+                                    else -> ChipTone.LINE
+                                },
+                                accent = if (row.badgeTone == RowBadgeTone.POSITIVE) accent else PluginAccent.NEUTRAL
+                            )
                             Spacer(modifier = Modifier.width(6.dp))
                         }
                         if (!row.amount.isNullOrBlank()) {

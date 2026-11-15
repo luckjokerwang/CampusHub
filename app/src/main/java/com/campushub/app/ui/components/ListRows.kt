@@ -72,6 +72,7 @@ fun ListRow(
     glyph: String? = null,
     accent: PluginAccent = PluginAccent.NEUTRAL,
     onClick: (() -> Unit)? = null,
+    wrapTitle: Boolean = false,
     trailing: @Composable (RowScope.() -> Unit)? = null
 ) {
     val palette = CampusTheme.palette
@@ -95,8 +96,8 @@ fun ListRow(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = palette.ink,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                maxLines = if (wrapTitle) Int.MAX_VALUE else 1,
+                overflow = if (wrapTitle) TextOverflow.Clip else TextOverflow.Ellipsis
             )
             if (!subtitle.isNullOrBlank()) {
                 Text(

@@ -90,6 +90,7 @@ fun GlanceCard(
     val palette = CampusTheme.palette
     val largeFont = LocalLargeFont.current
     var switcherOpen by remember { mutableStateOf(false) }
+    var chipPickerOpen by remember { mutableStateOf(false) }
     val slots = GlanceLayoutRules.visibleSlots(size, largeFont)
     val accent = spec.accent.color()
 
@@ -205,6 +206,11 @@ fun GlanceCard(
                 }
                 if (GlanceSlot.CHIP in slots && !model.chip.isNullOrBlank()) {
                     Spacer(modifier = Modifier.width(6.dp))
+                    val chipClick = if (model.chipPicker != null) {
+                        Modifier.clickableNoIndication { chipPickerOpen = true }
+                    } else {
+                        Modifier
+                    }
                     StatusChip(
                         text = model.chip,
                         tone = if (model.state == CardState.RUNNING) {
@@ -214,7 +220,8 @@ fun GlanceCard(
                         } else {
                             ChipTone.NEUTRAL
                         },
-                        accent = spec.accent
+                        accent = spec.accent,
+                        modifier = chipClick
                     )
                 }
             }
@@ -353,6 +360,40 @@ fun GlanceCard(
                             switcherOpen = false
                             if (!option.selected) {
                                 onTarget(GlanceTarget.Command(switcher.commandId, option.id))
+                            }
+                        }
+                    ) {
+                        if (option.selected) {
+                            StatusChip(text = "当前", tone = ChipTone.TINT, accent = spec.accent)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 状态 chip 单选（如「启动延时秒数」）：点 chip 直接弹出，选中即回传命令
+    val chipPicker = model.chipPicker
+    if (chipPicker != null && chipPickerOpen) {
+        ModalBottomSheet(
+            onDismissRequest = { chipPickerOpen = false },
+            containerColor = palette.surface
+        ) {
+            Column(modifier = Modifier.padding(bottom = 24.dp)) {
+                Text(
+                    text = chipPicker.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = palette.ink,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                )
+                chipPicker.options.forEach { option ->
+                    ListRow(
+                        title = option.label,
+                        subtitle = if (option.selected) "当前" else null,
+                        onClick = {
+                            chipPickerOpen = false
+                            if (!option.selected) {
+                                onTarget(GlanceTarget.Command(chipPicker.commandId, option.id))
                             }
                         }
                     ) {

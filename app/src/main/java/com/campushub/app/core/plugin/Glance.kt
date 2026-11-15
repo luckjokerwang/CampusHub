@@ -52,6 +52,18 @@ data class GlanceAction(
 data class GlanceOption(val id: String, val label: String, val selected: Boolean)
 
 /**
+ * 状态 chip 被点击后弹出的单选（复用 [GlanceOption] 的选项结构）。
+ *
+ * 与 [GlanceSwitcher] 的区别：入口是右上角状态 chip，而不是标题后的 ▾；
+ * 选中后仍以 [commandId] + 选项 id 发回宿主。
+ */
+data class GlanceChipPicker(
+    val title: String,
+    val options: List<GlanceOption>,
+    val commandId: String
+)
+
+/**
  * 头部下拉：把「当前用的是哪一个」直接摊开，而不是给一个抽象的「切换」按钮。
  *
  * 宿主把当前选项的 label 显示在卡片标题后面并带一个 ▾，点开是全部选项；
@@ -77,6 +89,7 @@ data class GlanceDetail(val label: String, val value: String)
  * @param action 底部动作按钮。
  * @param link 文字链（如「去领取 ›」），与 [action] 互斥使用。
  * @param headerLink 头部右侧文字链（如「切换」）。
+ * @param chipPicker 非空时 chip 可点，弹出单选（如「启动延时秒数」）。
  * @param tapTarget 整卡点击目标，null = 不响应。
  */
 data class GlanceModel(
@@ -94,6 +107,7 @@ data class GlanceModel(
     val link: GlanceAction? = null,
     val headerLink: GlanceAction? = null,
     val switcher: GlanceSwitcher? = null,
+    val chipPicker: GlanceChipPicker? = null,
     val tapTarget: GlanceTarget? = null
 )
 
