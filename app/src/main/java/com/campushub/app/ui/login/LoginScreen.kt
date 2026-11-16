@@ -72,8 +72,9 @@ fun LoginScreen(
     LaunchedEffect(state.phase) {
         if (state.phase == LoginPhase.SUCCESS) {
             delay(1_500)
-            onLoggedIn()
+            // 先退出登录页，再刷新首页/插件页，避免刷新状态和退场动画互相抢占。
             onBack()
+            onLoggedIn()
         }
     }
 
@@ -163,8 +164,8 @@ fun LoginScreen(
                     CampusButton(
                         label = "立即返回",
                         onClick = {
-                            onLoggedIn()
                             onBack()
+                            onLoggedIn()
                         },
                         size = ButtonSize.LG,
                         modifier = Modifier.fillMaxWidth()

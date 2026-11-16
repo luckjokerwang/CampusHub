@@ -1,16 +1,16 @@
 {
-  "versionCode": 20,
-  "versionName": "1.2.12",
+  "versionCode": 21,
+  "versionName": "1.2.13",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.12.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.12.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.13.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.13.apk"
   ],
-  "sha256": "856299ddef1dd583c3fb861d12db6051cc518e8fe315df482c060358b201dfd0",
+  "sha256": "580055b99daf6f133c36d2408f8df8f5883f3472a4f240d3ea3a0b640d19333c",
   "size": 11035917,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.12\n\n学习通主账号、课表、通知、扫码签到与多账号联合签到接入；新增课程表桌面微件。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器（真实网关地址、签名算法、会话状态机）。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，**两者源码不等价**。\n\n## 下载\n\n- `CampusBox-v1.2.12-release.apk`\n- 包名 `com.campushub.app`，`versionCode 20` / `versionName 1.2.12`\n- 安装：`adb install -r CampusBox-v1.2.12-release.apk`\n\n## 本次更新\n\n### 学习通\n\n- **主账号**：手机号 + 短信验证码登录，多账号独立 Cookie；当前账号显示在「我的」顶部。\n- **课表**：今日 / 本周原生页面；周网格按真实节次时间绘制，支持跨节次课程、上一周 / 本周 / 下一周。\n- **午休 / 晚休**：按 `12:20` / `17:30` 检测真实节次结束时间，灰条居中，只有后面还有节次时才显示。\n- **通知收件箱**：课程与系统通知去重、分页、本地隐藏 / 已查看；不调用上游已读写接口。\n- **扫码签到**：首页独立「扫码签到」卡片 + 「我的」快捷入口；扫码后先确认课程与账号，用户确认后才提交。\n- **多账号联合签到**：逐账号检查课程资格，独立提交、逐账号显示成功 / 已签到 / 失败 / 结果未知，部分成功不回滚。\n- **提醒**：通知 / 系统闹钟、全局与单课例外；0 分钟文案改为「上课时 / 现在上课」。\n\n### 桌面微件\n\n- 新增**课程表微件**：日期卡、当天课程、前后日期切换，点击进入本周课表。\n- 三个微件都补了 `previewImage`，桌面选择器不再只显示 App 图标。\n- 微件底部改为箭头靠边、标题居中，避免窄尺寸下文字被截断。\n\n### 修复\n\n- `HttpBridge` 补齐多 `Set-Cookie`、手动重定向、form Content-Type，支撑学习通 SSO。\n- 扫码器新增 raw 模式，学习通二维码不再被水控设备号解析。\n- 课表时间列与星期表头共用高度；七列按剩余像素铺满，修复断层和右侧留白。\n- 午休/晚休灰条不再画穿格线，标签居中。\n\n## 验证\n\n- 单测 **392 例 / 41 个测试类 / 41 文件全绿**。\n- `compileDebugKotlin`、`testDebugUnitTest`、JDK 17 `assembleRelease` 通过。\n- release 签名、zipalign、badging、公开壳编译与 update 清单校验通过。\n- 真实短信登录、完整课表/通知响应、课堂签到与教师端结果仍以用户现场验收为准。\n\n## 已知限制\n\n- Android Glance 微件不支持横向滑动手势；课程表微件使用左右按钮切换日期。\n- 三个微件的 provider 名称已分别设置，但部分 launcher（含 vivo/OriginOS）会在桌面下方显示应用名\n  「校园百宝箱」，这是 launcher 行为，Android 没有公开 API 强制覆盖。\n- 乐校通 BLE 开/关阀帧仍未用真机 HCI 日志校准；云端模式可用。\n- 乐校通不提供账单历史；`supportsBilling = false`。\n- 空教室 / 成绩查询未开始。\n- 物理开阀、真实扫码、课堂签到与真实登录没有自动化回归，需人工真机验证。"
+  "changelog": "# CampusHub 1.2.13\n\n修复学习通登录返回后内容区纯白、底部导航仍在的问题。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次修复\n\n- 登录态变化时强制重建首页 / 插件 / 我的三个 Tab 内容，不再沿用登录前的空白组合状态。\n- 登录成功先退出登录页，再启动 `refreshAfterLogin()`，避免刷新与导航退场竞争。\n- 登录数据加载完成后把 `HorizontalPager` 落定到当前页，消除内容偏移未收敛的中间态。\n\n## 说明\n\n- v1.2.0 的 `HomeSafety` 只保护首页卡片区，**没有覆盖插件页和我的页**；v1.2.12 的白屏\n  属于 Tab 内容组合状态，不是首页卡片数据错误，重启后能恢复。\n- 本轮修复已写进 `docs/pitfalls/ui-and-widgets.md` 与\n  `docs/specs/followups-2026-11-12.md`，未复验前不标记为“已根因解决”。\n\n## 验证\n\n- 单测 **392 例 / 41 个测试类**全绿。\n- `compileDebugKotlin` 与 `assembleDebug` 通过。\n- 正式包强制停止后重启：首页、插件页正常渲染。\n- **登录返回后的最终白屏是否消失，需要用户用真实学习通账号再登录一次确认。**\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.13-release.apk\n```"
 }
