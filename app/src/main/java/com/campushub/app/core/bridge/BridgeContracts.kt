@@ -8,6 +8,8 @@ data class BridgeHttpResponse(
     val status: Int,
     val headers: Map<String, String> = emptyMap(),
     val data: String = "",
+    /** 原始 Set-Cookie 列表；同名响应头可能重复，不能压进 [headers]。 */
+    val setCookies: List<String> = emptyList(),
     /**
      * 传输层失败原因（连接被拒、TLS 握手失败、超时…）。
      *
@@ -29,6 +31,15 @@ interface HttpBridge {
         headers: Map<String, String>? = null,
         timeoutSeconds: Long? = 15L
     ): BridgeHttpResponse
+
+    /** 手动跟随 SSO 重定向；默认保持旧行为，测试替身只需实现 [request]。 */
+    suspend fun requestWithoutRedirects(
+        method: String,
+        url: String,
+        body: String? = null,
+        headers: Map<String, String>? = null,
+        timeoutSeconds: Long? = 15L
+    ): BridgeHttpResponse = request(method, url, body, headers, timeoutSeconds)
 
     /**
      * 取二进制响应（如图形验证码）。失败返回 null，由调用方转成带类型的错误。

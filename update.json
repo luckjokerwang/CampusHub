@@ -1,16 +1,16 @@
 {
-  "versionCode": 19,
-  "versionName": "1.2.11",
+  "versionCode": 20,
+  "versionName": "1.2.12",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.11/releases/app-1.2.11.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.11.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.11.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.12/releases/app-1.2.12.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.12.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.12.apk"
   ],
-  "sha256": "38d44eb70bf173d6aa10b497137ddfb78c1ae7edcaba560d3135bcb6571eafb3",
-  "size": 10817513,
+  "sha256": "856299ddef1dd583c3fb861d12db6051cc518e8fe315df482c060358b201dfd0",
+  "size": 11035917,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.11\n\n校园百宝箱饮用水卡「启动延时」直达化，慧积分任务日志更好读。\n\n## 新增 / 改动\n\n- **饮用水卡 chip 直达延时设置**：右上角「延时 10s / 立即开阀」现在可点，弹出 0 / 5 / 10 / 15 / 20 / 30 秒单选，选中即生效。\n  - 0 秒 = 立即开阀，不再需要先关掉「延时启动」开关。\n  - 卡片、设备管理页、桌面快捷方式、deep link 确认页读同一份设置，文案一致。\n  - 仍是纯本地倒计时，不改变开水请求，不影响真实出水与结算。\n- **慧积分任务日志结构化**：长日志不再被一行截断，按「内容 / 账号·状态 / 成功·失败·进行中标记 / +N 分」分行显示。\n  - 整页配色与首页积分卡统一，KPI 卡片补齐层次。\n  - 不编造时间戳（源日志里没有时间字段）。\n\n## 验证\n\n- 单测 356 例 / 35 个测试类全绿；编译通过。\n- JDK 17 release 签名、zipalign、版本号与证书指纹校验通过。\n\n## 说明\n\n- 本轮未改动 `/dev/start` 协议参数、会话状态机取消与幂等逻辑。\n- 「积分代付 / 开启自动抵扣」官方小程序开关未被逆向到接口，本版不含该功能。"
+  "changelog": "# CampusHub 1.2.12\n\n学习通主账号、课表、通知、扫码签到与多账号联合签到接入；新增课程表桌面微件。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器（真实网关地址、签名算法、会话状态机）。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，**两者源码不等价**。\n\n## 下载\n\n- `CampusBox-v1.2.12-release.apk`\n- 包名 `com.campushub.app`，`versionCode 20` / `versionName 1.2.12`\n- 安装：`adb install -r CampusBox-v1.2.12-release.apk`\n\n## 本次更新\n\n### 学习通\n\n- **主账号**：手机号 + 短信验证码登录，多账号独立 Cookie；当前账号显示在「我的」顶部。\n- **课表**：今日 / 本周原生页面；周网格按真实节次时间绘制，支持跨节次课程、上一周 / 本周 / 下一周。\n- **午休 / 晚休**：按 `12:20` / `17:30` 检测真实节次结束时间，灰条居中，只有后面还有节次时才显示。\n- **通知收件箱**：课程与系统通知去重、分页、本地隐藏 / 已查看；不调用上游已读写接口。\n- **扫码签到**：首页独立「扫码签到」卡片 + 「我的」快捷入口；扫码后先确认课程与账号，用户确认后才提交。\n- **多账号联合签到**：逐账号检查课程资格，独立提交、逐账号显示成功 / 已签到 / 失败 / 结果未知，部分成功不回滚。\n- **提醒**：通知 / 系统闹钟、全局与单课例外；0 分钟文案改为「上课时 / 现在上课」。\n\n### 桌面微件\n\n- 新增**课程表微件**：日期卡、当天课程、前后日期切换，点击进入本周课表。\n- 三个微件都补了 `previewImage`，桌面选择器不再只显示 App 图标。\n- 微件底部改为箭头靠边、标题居中，避免窄尺寸下文字被截断。\n\n### 修复\n\n- `HttpBridge` 补齐多 `Set-Cookie`、手动重定向、form Content-Type，支撑学习通 SSO。\n- 扫码器新增 raw 模式，学习通二维码不再被水控设备号解析。\n- 课表时间列与星期表头共用高度；七列按剩余像素铺满，修复断层和右侧留白。\n- 午休/晚休灰条不再画穿格线，标签居中。\n\n## 验证\n\n- 单测 **392 例 / 41 个测试类 / 41 文件全绿**。\n- `compileDebugKotlin`、`testDebugUnitTest`、JDK 17 `assembleRelease` 通过。\n- release 签名、zipalign、badging、公开壳编译与 update 清单校验通过。\n- 真实短信登录、完整课表/通知响应、课堂签到与教师端结果仍以用户现场验收为准。\n\n## 已知限制\n\n- Android Glance 微件不支持横向滑动手势；课程表微件使用左右按钮切换日期。\n- 三个微件的 provider 名称已分别设置，但部分 launcher（含 vivo/OriginOS）会在桌面下方显示应用名\n  「校园百宝箱」，这是 launcher 行为，Android 没有公开 API 强制覆盖。\n- 乐校通 BLE 开/关阀帧仍未用真机 HCI 日志校准；云端模式可用。\n- 乐校通不提供账单历史；`supportsBilling = false`。\n- 空教室 / 成绩查询未开始。\n- 物理开阀、真实扫码、课堂签到与真实登录没有自动化回归，需人工真机验证。"
 }

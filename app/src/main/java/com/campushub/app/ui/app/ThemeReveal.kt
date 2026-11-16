@@ -73,12 +73,14 @@ fun ThemeReveal(
         if (darkTheme == renderedDark) return@LaunchedEffect
         if (!animate) {
             renderedDark = darkTheme
+            snapshot = null
             return@LaunchedEffect
         }
         // 用 PixelCopy 从 GPU 抓当前帧（~10ms）。软件重绘整棵 Compose 树要 1s 以上，会明显卡顿。
         val bitmap = captureWindow(view)
         if (bitmap == null) {
             renderedDark = darkTheme
+            snapshot = null
             return@LaunchedEffect
         }
 
@@ -91,14 +93,25 @@ fun ThemeReveal(
         holeRadius = view.resources.displayMetrics.density * 18f
         snapshot = bitmap
         renderedDark = darkTheme
-        animate(
-            initialValue = 0f,
-            targetValue = maxRadius,
-            animationSpec = tween(durationMillis = durationMillis, easing = LinearEasing)
-        ) { value, _ ->
-            holeRadius = value
+        try {
+            animate(
+                initialValue = 0f,
+                targetValue = maxRadius,
+                animationSpec = tween(durationMillis = durationMillis, easing = LinearEasing)
+            ) { value, _ ->
+                holeRadius = value
+            }
+        } finally {
+            snapshot = null
         }
-        snapshot = null
+    }
+
+    // 动画协程或帧回调异常退出时，绝不能把旧界面快照永久盖在新界面上。
+    LaunchedEffect(snapshot, durationMillis) {
+        if (snapshot != null) {
+            kotlinx.coroutines.delay(durationMillis + 500L)
+            snapshot = null
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
