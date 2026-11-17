@@ -79,6 +79,18 @@ inline fun <T, R> ServiceResult<T>.flatMap(transform: (T) -> ServiceResult<R>): 
     }
 
 /**
+ * 安全执行可能挂起的逻辑：显式放行 [kotlinx.coroutines.CancellationException]，仅将业务/IO 异常收口为 [Result.failure]。
+ */
+internal inline fun <T> runSuspendCatching(block: () -> T): Result<T> =
+    try {
+        Result.success(block())
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+/**
  * 非 2xx 响应的统一失败映射。
  *
  * 传输层失败（[BridgeHttpResponse.transportError] 非空）与网关返回错误状态码是两件事：

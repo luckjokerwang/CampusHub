@@ -70,6 +70,14 @@ import com.campushub.app.ui.components.clickableNoIndication
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.tooling.preview.Preview
+import com.campushub.app.core.plugin.ActionStyle
+import com.campushub.app.core.plugin.GlanceAction
+import com.campushub.app.core.plugin.GlanceDetail
+import com.campushub.app.core.plugin.PluginAccent
+import com.campushub.app.ui.theme.CampusHubTheme
+import com.campushub.app.ui.theme.CampusSurfaces.pageBackground
 
 /**
  * 一张便当盒卡片的渲染器。
@@ -535,4 +543,136 @@ private fun animatedReadout(raw: String?): String {
         }
     }
     return ReadoutFormat.format(parsed, animated.value)
+}
+
+@Preview(name = "Bento Hero Water (Light)", showBackground = true, widthDp = 360)
+@Preview(
+    name = "Bento Hero Water (Dark)",
+    showBackground = true,
+    widthDp = 360,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+private fun GlanceCardHeroWaterPreview() {
+    val dark = androidx.compose.foundation.isSystemInDarkTheme()
+    CampusHubTheme(darkTheme = dark) {
+        Box(
+            modifier = Modifier
+                .pageBackground()
+                .padding(16.dp)
+        ) {
+            GlanceCard(
+                model = GlanceModel(
+                    cardId = "water_hero",
+                    state = CardState.RUNNING,
+                    title = "直饮水",
+                    serviceLabel = "慧生活 798",
+                    chip = "出水中",
+                    readout = "1.42",
+                    readoutUnit = "L",
+                    sub = "2 栋 314 饮水机",
+                    details = listOf(
+                        GlanceDetail("上次结算", "0.24 元"),
+                        GlanceDetail("启动延时", "立即开阀")
+                    ),
+                    action = GlanceAction(
+                        label = "停止出水",
+                        target = GlanceTarget.Command("water.toggle"),
+                        style = ActionStyle.DANGER,
+                        icon = ActionIcon.DROPLET
+                    )
+                ),
+                spec = CardSpec(
+                    id = "water_hero",
+                    title = "直饮水",
+                    iconGlyph = "水",
+                    accent = PluginAccent.WATER,
+                    defaultSize = BentoCardSize.HERO_2X2,
+                    live = true
+                ),
+                size = BentoCardSize.HERO_2X2,
+                onTarget = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(228.dp)
+            )
+        }
+    }
+}
+
+@Preview(name = "Bento Compact Score + LargeFont", showBackground = true, widthDp = 360)
+@Composable
+private fun GlanceCardCompactAndLargeFontPreview() {
+    CampusHubTheme(darkTheme = false) {
+        Column(
+            modifier = Modifier
+                .pageBackground()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                GlanceCard(
+                    model = GlanceModel(
+                        cardId = "score",
+                        state = CardState.IDLE,
+                        title = "积分余额",
+                        serviceLabel = "慧生活 798",
+                        readout = "860",
+                        sub = "约可抵 8.60 元",
+                        action = GlanceAction(
+                            label = "去领取",
+                            target = GlanceTarget.Command("score.run"),
+                            style = ActionStyle.PRIMARY
+                        )
+                    ),
+                    spec = CardSpec(
+                        id = "score",
+                        title = "积分余额",
+                        iconGlyph = "分",
+                        accent = PluginAccent.SCORE,
+                        defaultSize = BentoCardSize.COMPACT_1X1,
+                        live = true
+                    ),
+                    size = BentoCardSize.COMPACT_1X1,
+                    onTarget = {},
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(148.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            CompositionLocalProvider(LocalLargeFont provides true) {
+                GlanceCard(
+                    model = GlanceModel(
+                        cardId = "shower",
+                        state = CardState.IDLE,
+                        title = "洗浴热水",
+                        serviceLabel = "乐校通",
+                        chip = "云端就绪",
+                        readout = "0.00",
+                        readoutUnit = "L",
+                        sub = "大字号应隐藏此副说明",
+                        action = GlanceAction(
+                            label = "开始热水",
+                            target = GlanceTarget.Command("shower.toggle"),
+                            style = ActionStyle.PRIMARY
+                        )
+                    ),
+                    spec = CardSpec(
+                        id = "shower",
+                        title = "洗浴热水",
+                        iconGlyph = "浴",
+                        accent = PluginAccent.BATH,
+                        defaultSize = BentoCardSize.EXPANDED_2X1,
+                        live = true
+                    ),
+                    size = BentoCardSize.EXPANDED_2X1,
+                    onTarget = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(148.dp)
+                )
+            }
+        }
+    }
 }

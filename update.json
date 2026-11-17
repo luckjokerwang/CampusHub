@@ -1,16 +1,16 @@
 {
-  "versionCode": 21,
-  "versionName": "1.2.13",
+  "versionCode": 22,
+  "versionName": "1.2.14",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.13/releases/app-1.2.13.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.13.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.13.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.14.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.14.apk"
   ],
-  "sha256": "580055b99daf6f133c36d2408f8df8f5883f3472a4f240d3ea3a0b640d19333c",
-  "size": 11035917,
+  "sha256": "76aea1611ae4663ea02fa9bf61214cfaf8044ec014e435e851c63bdb100b6dde",
+  "size": 5373887,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.13\n\n修复学习通登录返回后内容区纯白、底部导航仍在的问题。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次修复\n\n- 登录态变化时强制重建首页 / 插件 / 我的三个 Tab 内容，不再沿用登录前的空白组合状态。\n- 登录成功先退出登录页，再启动 `refreshAfterLogin()`，避免刷新与导航退场竞争。\n- 登录数据加载完成后把 `HorizontalPager` 落定到当前页，消除内容偏移未收敛的中间态。\n\n## 说明\n\n- v1.2.0 的 `HomeSafety` 只保护首页卡片区，**没有覆盖插件页和我的页**；v1.2.12 的白屏\n  属于 Tab 内容组合状态，不是首页卡片数据错误，重启后能恢复。\n- 本轮修复已写进 `docs/pitfalls/ui-and-widgets.md` 与\n  `docs/specs/followups-2026-11-12.md`，未复验前不标记为“已根因解决”。\n\n## 验证\n\n- 单测 **392 例 / 41 个测试类**全绿。\n- `compileDebugKotlin` 与 `assembleDebug` 通过。\n- 正式包强制停止后重启：首页、插件页正常渲染。\n- **登录返回后的最终白屏是否消失，需要用户用真实学习通账号再登录一次确认。**\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.13-release.apk\n```"
+  "changelog": "# CampusHub 1.2.14\n\n扫码识别与蓝牙连接稳定化、课表与水控边界收敛、首页编排器拆分及工程基建升级。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **扫码与相机生命周期修复**：修复 CameraX `YUV_420_888` 缓冲区在 `rowStride > width` 机型未裁齐导致二维码无法识别的问题；补齐退场 `unbindAll()` 与取景框 `CompositingStrategy.Offscreen` 挖孔合成。\n- **学习通课表与提醒稳健性**：今日课表列表补齐 `verticalScroll`，避免满课时条目截断；课程提醒通知与 `PendingIntent` 改用稳定唯一键防同名课程多节次相互覆盖，并补齐精确闹钟权限判空。\n- **乐校通蓝牙串行队列与句柄清理**：引入 `GattSerialExecutor` 串行队列（Stop-and-Wait + 超时恢复），避免并发 GATT 读写静默丢包，并修复连接超时残留 `BluetoothGatt` 与扫描回调未注销问题。\n- **水控会话协调器边界收敛**：饮用水 `Settling` 轮询改用显式放行 `CancellationException` + 非取消异常兜底并校验 `guard.isCurrent(token)`；洗浴 `stopWater` / `fail()` 补齐未注册服务出口并同步调用 `guard.invalidate()`。\n- **安全存储与更新验签兼容**：`SecureStorage` 增加 KeyStore 密钥失效自动熔断重建与 Android 12+ `dataExtractionRules` 备份排除（同时移除私有日志依赖以保持公开壳闭包纯净）；修复 `UpdateFeedClient` 在 Android 8.0/8.1 上的验签 API 兼容。\n- **架构与工程基建升级**：`DashboardViewModel` 拆降至 487 行（抽离 `BillingCoordinator` / `CardLayoutController` / `IlifeDashboardCoordinator` 纯协作者）；统一接入 `gradle/libs.versions.toml` 与 Gradle 并行/缓存配置。\n\n## 验证\n\n- JVM 单测 **419 例 / 48 个测试类（47 文件）全部通过**，`lintDebug` **0 Error**。\n- JDK 17 `assembleRelease`（R8 混淆 + 正式签名）通过。\n- 实际出水结算、实体扫码、真机蓝牙广播扫描与登录后 Tab 渲染仍需真机场景验收。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.14-release.apk\n```"
 }
