@@ -1,16 +1,16 @@
 {
-  "versionCode": 22,
-  "versionName": "1.2.14",
+  "versionCode": 23,
+  "versionName": "1.2.15",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.14/releases/app-1.2.14.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.14.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.14.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.15.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.15.apk"
   ],
-  "sha256": "76aea1611ae4663ea02fa9bf61214cfaf8044ec014e435e851c63bdb100b6dde",
-  "size": 5373887,
+  "sha256": "40f77f674a3d9ab920fe0422dc22018e138f51d5a60d9dd64b4d2bb83f478f14",
+  "size": 5390367,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.14\n\n扫码识别与蓝牙连接稳定化、课表与水控边界收敛、首页编排器拆分及工程基建升级。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **扫码与相机生命周期修复**：修复 CameraX `YUV_420_888` 缓冲区在 `rowStride > width` 机型未裁齐导致二维码无法识别的问题；补齐退场 `unbindAll()` 与取景框 `CompositingStrategy.Offscreen` 挖孔合成。\n- **学习通课表与提醒稳健性**：今日课表列表补齐 `verticalScroll`，避免满课时条目截断；课程提醒通知与 `PendingIntent` 改用稳定唯一键防同名课程多节次相互覆盖，并补齐精确闹钟权限判空。\n- **乐校通蓝牙串行队列与句柄清理**：引入 `GattSerialExecutor` 串行队列（Stop-and-Wait + 超时恢复），避免并发 GATT 读写静默丢包，并修复连接超时残留 `BluetoothGatt` 与扫描回调未注销问题。\n- **水控会话协调器边界收敛**：饮用水 `Settling` 轮询改用显式放行 `CancellationException` + 非取消异常兜底并校验 `guard.isCurrent(token)`；洗浴 `stopWater` / `fail()` 补齐未注册服务出口并同步调用 `guard.invalidate()`。\n- **安全存储与更新验签兼容**：`SecureStorage` 增加 KeyStore 密钥失效自动熔断重建与 Android 12+ `dataExtractionRules` 备份排除（同时移除私有日志依赖以保持公开壳闭包纯净）；修复 `UpdateFeedClient` 在 Android 8.0/8.1 上的验签 API 兼容。\n- **架构与工程基建升级**：`DashboardViewModel` 拆降至 487 行（抽离 `BillingCoordinator` / `CardLayoutController` / `IlifeDashboardCoordinator` 纯协作者）；统一接入 `gradle/libs.versions.toml` 与 Gradle 并行/缓存配置。\n\n## 验证\n\n- JVM 单测 **419 例 / 48 个测试类（47 文件）全部通过**，`lintDebug` **0 Error**。\n- JDK 17 `assembleRelease`（R8 混淆 + 正式签名）通过。\n- 实际出水结算、实体扫码、真机蓝牙广播扫描与登录后 Tab 渲染仍需真机场景验收。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.14-release.apk\n```"
+  "changelog": "# CampusHub 1.2.15\n\n课表微件回今日与三态着色、学习通资料页（姓名/头像/单位/性别）、系统闹钟全屏响铃、启动动画开关修复。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **课程表微件**：左右浏览其他日期后 **30 分钟自动回到今日**（切天/久置不再把别的日期误当今天）；非今日时中间标签变「回到今天」并点击直达；今日课程按「已结束（灰）/ 进行中（红 + 进行中 ·）/ 即将（课程色）」三态着色；日期头今日与非今日保持一致，不做突兀文字差异。\n- **学习通资料**：修复姓名/学校/头像一直为空的问题——`getUser` 把用户对象放在顶层 `msg` 而不是 `data`，改为三级回退解析并补全姓名、昵称、头像、单位、性别；旧账号把学号当姓名的历史数据自动迁移为「学号」字段；新增「学习通资料」页（头像、姓名、单位、学号、性别、手机号，账号 ID 弱化置底）。头像改用现有网络桥接带账号会话头拉取并内存缓存，不引入图片库。\n- **系统闹钟**：新增全屏响铃页（锁屏拉起、点亮屏幕、闹钟铃声循环 + 振动、停止 / 稍后 5 分钟）；通知作为兜底；精确闹钟权限缺失时降级为非精确调度，不再静默丢弃提醒；通知权限不再拦截闹钟模式。\n- **启动动画开关**：修复开关恒为开启、点击无效的问题（设置页参数此前未接线），冷启动改为读取真实设置后再决定是否播放开屏视频。\n\n## 验证\n\n- JVM 单测 **444 例 / 50 个测试类（49 文件）全部通过**，`lintDebug` **0 Error**。\n- 真机实测：「我的」账号卡与资料页显示姓名/单位/学号/性别/头像；诊断日志确认 `getUser` 载荷层级与头像 JPEG 解码。\n- 开屏视频关闭后的冷启动表现、系统闹钟锁屏响铃、微件 30 分钟回今日仍需真机场景验收。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.15-release.apk\n```"
 }
