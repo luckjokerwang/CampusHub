@@ -1,16 +1,16 @@
 {
-  "versionCode": 24,
-  "versionName": "1.2.16",
+  "versionCode": 25,
+  "versionName": "1.2.17",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.16.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.16.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.17.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.17.apk"
   ],
-  "sha256": "e71f4274ed44ae2fbec347dbf32d62b2815fb2971328ae3a6a58b6ddd77f3101",
-  "size": 5385975,
+  "sha256": "f31faf29e15394c50e5d71102d60955e81449ea2bee6d40265f2a7b9ad610754",
+  "size": 5402359,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.16\n\n冷启动网络性能优化与课程提醒可靠性修复。无 UI 改动，界面与交互与 1.2.15 一致。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **冷启动更快**：首页非实时卡片改为并发拉取（原来逐张串行等待），首次加载由 N×网络往返降为约 1×；同时消除冷启动进入首页时的重复刷新与切回前台的整轮重拉，减少约一半 glance 请求。\n- **网络更省、更稳**：PU 口袋校园个人资料在同一次打开内复用缓存，避免多处重复请求（切换账号、重新登录会自动失效）；网络响应体加 1 MiB 上限，遇到异常超大响应按传输失败处理，避免内存溢出。\n- **课程提醒更可靠**：补齐电池优化白名单检查——此前进程被系统冻结时，闹钟到点可能不投递；同时对精确闹钟、电池白名单、通知权限的判定收敛为统一模块，排程路径（精确闹钟 / 普通精确 / 非精确降级 / 跳过）改为可测试的独立决策。\n- **权限提示不造假**：权限不足时明确标记「未排程」，不再假装提醒已设置成功。\n\n## 验证\n\n- JVM 单测 **450 例全部通过**，`lintDebug` **0 Error**。\n- 系统闹钟锁屏响铃、通知实际弹出以真机验收为准；本次未改动相关呈现代码。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.16-release.apk\n```"
+  "changelog": "# CampusHub 1.2.17\n\n稳定性与低风险性能加固。界面与交互与 1.2.16 一致，无新增入口、无视觉改动。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **开阀/报名不再被弱网重放**：HTTP 路由只在 TLS 握手失败、连接失败或域名解析失败时切换；读超时、EOF、普通 I/O 错误一律不重放。OkHttp 内部重试全部关闭，路由级决策成为唯一重试源。慧生活用 GET 开阀，因此判断不看 HTTP 方法。\n- **乐校通 WAF Cookie 轮换**：登录后自动保存并合并 `__jsluid_s`，后续响应轮换时自动更新后续请求的 Cookie 与 x-token；手动配置新 token 或退出登录时清除旧 WAF Cookie，避免 `Code:-44 用户身份失效`。\n- **PU 写操作不再假成功**：报名、签到、改密等写请求只有在响应是合法 JSON 且含 `code` 字段时才判成功；WAF 返回 HTML 或格式变化时明确报「响应格式已变化」。\n- **开水响应更快**：慧生活开阀后不再附带最多 15 个账单详情请求，历史账单 ID 改为单次列表直读；账单基线代码精简，水表基线仍在开阀时获取，停水与物理停水检测不受影响。\n- **结算只刷一次**：移除结算回调导致的重复刷新，账单、积分、微件数据统一由会话状态驱动；积分回源合并为单一触发流，任务运行中不再因版本事件重复回源；微件数据读取的节流与去重收敛到主线程调度。\n- **启动动画开关即时生效**：冷启动时异步读取设置首值，未就绪期间显示与视频首帧一致的静态图；关闭动画后不再闪播视频，首值到达前不创建主界面导航树。\n- **空闲开销收敛**：Bento 卡片抖动动画与下拉刷新旋转动画只在对应状态创建；下拉内容位移改在布局相位完成；桌宠素材可用性缓存到进程内，图片后台解码并做内存缓存。\n\n## 验证\n\n- JVM 单测 **460 例全部通过**（0 failures / 0 errors / 0 skipped）；`:app:compileDebugKotlin` 与 `:app:lintDebug` **0 Error**。\n- 静态首帧已通过 Compose Preview 出图核对，明暗背景均居中无布局变化。\n- 真水机开阀/结算、实体扫码、BLE 广播与弱网 WAF 行为以用户真机验收为准。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.17-release.apk\n```"
 }
