@@ -1,16 +1,16 @@
 {
-  "versionCode": 23,
-  "versionName": "1.2.15",
+  "versionCode": 24,
+  "versionName": "1.2.16",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.15/releases/app-1.2.15.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.15.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.15.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.16/releases/app-1.2.16.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.16.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.16.apk"
   ],
-  "sha256": "40f77f674a3d9ab920fe0422dc22018e138f51d5a60d9dd64b4d2bb83f478f14",
-  "size": 5390367,
+  "sha256": "e71f4274ed44ae2fbec347dbf32d62b2815fb2971328ae3a6a58b6ddd77f3101",
+  "size": 5385975,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.15\n\n课表微件回今日与三态着色、学习通资料页（姓名/头像/单位/性别）、系统闹钟全屏响铃、启动动画开关修复。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **课程表微件**：左右浏览其他日期后 **30 分钟自动回到今日**（切天/久置不再把别的日期误当今天）；非今日时中间标签变「回到今天」并点击直达；今日课程按「已结束（灰）/ 进行中（红 + 进行中 ·）/ 即将（课程色）」三态着色；日期头今日与非今日保持一致，不做突兀文字差异。\n- **学习通资料**：修复姓名/学校/头像一直为空的问题——`getUser` 把用户对象放在顶层 `msg` 而不是 `data`，改为三级回退解析并补全姓名、昵称、头像、单位、性别；旧账号把学号当姓名的历史数据自动迁移为「学号」字段；新增「学习通资料」页（头像、姓名、单位、学号、性别、手机号，账号 ID 弱化置底）。头像改用现有网络桥接带账号会话头拉取并内存缓存，不引入图片库。\n- **系统闹钟**：新增全屏响铃页（锁屏拉起、点亮屏幕、闹钟铃声循环 + 振动、停止 / 稍后 5 分钟）；通知作为兜底；精确闹钟权限缺失时降级为非精确调度，不再静默丢弃提醒；通知权限不再拦截闹钟模式。\n- **启动动画开关**：修复开关恒为开启、点击无效的问题（设置页参数此前未接线），冷启动改为读取真实设置后再决定是否播放开屏视频。\n\n## 验证\n\n- JVM 单测 **444 例 / 50 个测试类（49 文件）全部通过**，`lintDebug` **0 Error**。\n- 真机实测：「我的」账号卡与资料页显示姓名/单位/学号/性别/头像；诊断日志确认 `getUser` 载荷层级与头像 JPEG 解码。\n- 开屏视频关闭后的冷启动表现、系统闹钟锁屏响铃、微件 30 分钟回今日仍需真机场景验收。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.15-release.apk\n```"
+  "changelog": "# CampusHub 1.2.16\n\n冷启动网络性能优化与课程提醒可靠性修复。无 UI 改动，界面与交互与 1.2.15 一致。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **冷启动更快**：首页非实时卡片改为并发拉取（原来逐张串行等待），首次加载由 N×网络往返降为约 1×；同时消除冷启动进入首页时的重复刷新与切回前台的整轮重拉，减少约一半 glance 请求。\n- **网络更省、更稳**：PU 口袋校园个人资料在同一次打开内复用缓存，避免多处重复请求（切换账号、重新登录会自动失效）；网络响应体加 1 MiB 上限，遇到异常超大响应按传输失败处理，避免内存溢出。\n- **课程提醒更可靠**：补齐电池优化白名单检查——此前进程被系统冻结时，闹钟到点可能不投递；同时对精确闹钟、电池白名单、通知权限的判定收敛为统一模块，排程路径（精确闹钟 / 普通精确 / 非精确降级 / 跳过）改为可测试的独立决策。\n- **权限提示不造假**：权限不足时明确标记「未排程」，不再假装提醒已设置成功。\n\n## 验证\n\n- JVM 单测 **450 例全部通过**，`lintDebug` **0 Error**。\n- 系统闹钟锁屏响铃、通知实际弹出以真机验收为准；本次未改动相关呈现代码。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.16-release.apk\n```"
 }
