@@ -1,16 +1,17 @@
 {
-  "versionCode": 26,
-  "versionName": "1.2.18",
+  "versionCode": 27,
+  "versionName": "1.2.19",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.18.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.18.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.19.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.19.apk"
   ],
-  "sha256": "dce9ca662d5bd04c3dcf507f9240ac32d79722c44cb300adb4713338b5cf5515",
-  "size": 5402355,
+  "sha256": "5f156a34fe32ce601cb1a1863e9279568ef83811ac00110b063cac8b77aff298",
+  "size": 5402359,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.18\n\n水控状态机竞态与开屏视觉修复。界面入口与 1.2.17 一致，仅修正暗色开屏边带与检查更新提示行为。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **洗浴双开阀竞态**：`ShowerWaterSessionCoordinator` 用 `@Synchronized claimStart()` 把「判定可启动」与「写入 Connecting」原子化。App 卡、桌面微件与 QS 磁贴同时点启动时，只会开一次阀，杜绝重复扣费风险。\n- **饮用水结算卡死**：`DrinkingWaterSessionCoordinator` 把账单轮询从监控协程中拆出，改跑在独立 `settleJob`，不再被手动停水的取消动作掐死；轮询异常或超时也由 `finally` 兜底落到已停水态，物理停水后紧跟手动停水不会再永久卡在「等待出账」。\n- **暗色开屏黑边**：开屏视频与首帧占位图底色统一锁定为品牌色，不再随主题 surface 变化。9:16 素材 contain 缩放在暗色主题下露出的两条黑边消失。\n- **检查更新双弹窗**：手动检查完成时先清掉「正在检查更新…」提示，发现新版本只由新版本弹窗呈现；点「稍后」或弹窗外同时关闭两个提示并回到 Idle，卡片不再残留「发现新版本」。\n\n## 验证\n\n- JVM 单测 **463 例全部通过**（0 failures / 0 errors / 0 skipped）；`:app:compileDebugKotlin` 与 `:app:lintDebug` **0 Error**。\n- 单测用 JDK 25 运行（本机 JDK 17 的 cacerts 为空，会在 OkHttp 构造阶段抛 `KeyStoreException`，见 `quality/release.md` §7.1）；release 用 JDK 17 + 系统 truststore 构建。\n- 真水机开阀/结算、实体扫码、BLE 广播与暗色开屏视觉以用户真机验收为准。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.18-release.apk\n```"
+  "releaseNotes": [{"versionCode": 27, "versionName": "1.2.19", "highlights": ["更新说明改成按版本列出，跨版本升级能看清每个版本改了什么", "乐校通热水微件与 App 状态保持同步，不再停在旧状态", "关于页新增开源仓库入口，反馈、建议可提 Issue，觉得好用欢迎点 Star"]}, {"versionCode": 26, "versionName": "1.2.18", "highlights": ["开阀不再重复：卡片和微件一起点也只开一次，不重复扣费", "停水结算更可靠：不会再卡在「等待出账」", "暗色主题开屏，视频上下不再有黑边", "检查更新不再叠出两个弹窗"]}, {"versionCode": 25, "versionName": "1.2.17", "highlights": ["弱网下开阀、报名不会重复提交", "乐校通登录更稳定，不再频繁掉线", "开水响应更快，账单和积分只刷新一次"]}],
+  "changelog": "# CampusHub 1.2.19\n\n更新展示重构与水控多表面同步。界面入口整体沿用 1.2.18，更新说明与关于页有视觉调整。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **更新说明按版本列出**：跨版本升级时，会把跳过的每个版本改了什么分别列出来，不再只显示最新一版；文案改为用户视角，只说做成什么。\n- **乐校通热水微件同步**：出水期间微件与 App 状态保持一致，不再停在开阀那一瞬间的旧状态。\n- **关于页开源入口**：新增独立的开源仓库卡片，反馈、建议欢迎去仓库提 Issue；觉得好用也欢迎点个 Star。\n\n## 验证\n\n- JVM 单测 **466 例全部通过**（0 failures / 0 errors / 0 skipped）；`:app:compileDebugKotlin` 与 `:app:lintDebug` **0 Error**。\n- 更新弹窗多版本/回退、关于弹窗已 Compose `@Preview` 出图核对，debug 包已在真机安装验证。\n- 真水机开阀/结算、实体扫码、BLE 广播与水控多表面同步以用户真机验收为准。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.19-release.apk\n```"
 }
