@@ -1,17 +1,17 @@
 {
-  "versionCode": 27,
-  "versionName": "1.2.19",
+  "versionCode": 28,
+  "versionName": "1.3.0",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.19/releases/app-1.2.19.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.19.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.19.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.3.0/releases/app-1.3.0.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.3.0/releases/app-1.3.0.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.3.0/releases/app-1.3.0.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.3.0/releases/app-1.3.0.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.3.0.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.3.0.apk"
   ],
-  "sha256": "5f156a34fe32ce601cb1a1863e9279568ef83811ac00110b063cac8b77aff298",
-  "size": 5402359,
+  "sha256": "ddd17c9dc8b29b2d4b17fe0ae409f6df3997650ae5e1d5a7c800fbbc593fc149",
+  "size": 5405783,
   "minSdk": 26,
-  "releaseNotes": [{"versionCode": 27, "versionName": "1.2.19", "highlights": ["更新说明改成按版本列出，跨版本升级能看清每个版本改了什么", "乐校通热水微件与 App 状态保持同步，不再停在旧状态", "关于页新增开源仓库入口，反馈、建议可提 Issue，觉得好用欢迎点 Star"]}, {"versionCode": 26, "versionName": "1.2.18", "highlights": ["开阀不再重复：卡片和微件一起点也只开一次，不重复扣费", "停水结算更可靠：不会再卡在「等待出账」", "暗色主题开屏，视频上下不再有黑边", "检查更新不再叠出两个弹窗"]}, {"versionCode": 25, "versionName": "1.2.17", "highlights": ["弱网下开阀、报名不会重复提交", "乐校通登录更稳定，不再频繁掉线", "开水响应更快，账单和积分只刷新一次"]}],
-  "changelog": "• 更新说明改成按版本列出，跨版本升级能看清每个版本改了什么\n• 乐校通热水微件与 App 状态保持同步，不再停在旧状态\n• 关于页新增开源仓库入口，反馈、建议可提 Issue，觉得好用欢迎点 Star"
+  "releaseNotes": [{"versionCode": 28, "versionName": "1.3.0", "highlights": ["深色模式全面修复：消除页面顶部灰雾与冷启动闪白，跟随系统深色切换状态显示正确", "全站排版与防遮挡优化：修复多页面标题双倍缩进、底部表单和提示条被导航栏遮挡的问题", "登录与常用页体验打磨：学校选择器显示校名而非编号，账号页显示当前激活的学习通账号，积分权限返回后自动刷新", "四大校园服务稳定性加固：修复乐校通蓝牙回退与掉线识别、学习通单课提醒覆盖与退出清理、PU 断网不覆盖已有积分缓存", "插件安全底层升级：完善插件数据清理与网络域名隔离能力，为后续插件中心与扩展能力打好基础"]}, {"versionCode": 27, "versionName": "1.2.19", "highlights": ["更新说明改成按版本列出，跨版本升级能看清每个版本改了什么", "乐校通热水微件与 App 状态保持同步，不再停在旧状态", "关于页新增开源仓库入口，反馈、建议可提 Issue，觉得好用欢迎点 Star"]}, {"versionCode": 26, "versionName": "1.2.18", "highlights": ["开阀不再重复：卡片和微件一起点也只开一次，不重复扣费", "停水结算更可靠：不会再卡在「等待出账」", "暗色主题开屏，视频上下不再有黑边", "检查更新不再叠出两个弹窗"]}, {"versionCode": 25, "versionName": "1.2.17", "highlights": ["弱网下开阀、报名不会重复提交", "乐校通登录更稳定，不再频繁掉线", "开水响应更快，账单和积分只刷新一次"]}],
+  "changelog": "• 深色模式全面修复：消除页面顶部灰雾与冷启动闪白，跟随系统深色切换状态显示正确\n• 全站排版与防遮挡优化：修复多页面标题双倍缩进、底部表单和提示条被导航栏遮挡的问题\n• 登录与常用页体验打磨：学校选择器显示校名而非编号，账号页显示当前激活的学习通账号，积分权限返回后自动刷新\n• 四大校园服务稳定性加固：修复乐校通蓝牙回退与掉线识别、学习通单课提醒覆盖与退出清理、PU 断网不覆盖已有积分缓存\n• 插件安全底层升级：完善插件数据清理与网络域名隔离能力，为后续插件中心与扩展能力打好基础"
 }
