@@ -1,16 +1,16 @@
 {
-  "versionCode": 25,
-  "versionName": "1.2.17",
+  "versionCode": 26,
+  "versionName": "1.2.18",
   "apkUrls": [
-    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
-    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
-    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
-    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.17/releases/app-1.2.17.apk",
-    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.17.apk",
-    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.17.apk"
+    "https://cdn.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
+    "https://fastly.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
+    "https://gcore.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
+    "https://testingcf.jsdelivr.net/gh/luckjokerwang/CampusHub@v1.2.18/releases/app-1.2.18.apk",
+    "https://raw.githubusercontent.com/luckjokerwang/CampusHub/main/releases/app-1.2.18.apk",
+    "https://github.com/luckjokerwang/CampusHub/raw/main/releases/app-1.2.18.apk"
   ],
-  "sha256": "f31faf29e15394c50e5d71102d60955e81449ea2bee6d40265f2a7b9ad610754",
-  "size": 5402359,
+  "sha256": "dce9ca662d5bd04c3dcf507f9240ac32d79722c44cb300adb4713338b5cf5515",
+  "size": 5402355,
   "minSdk": 26,
-  "changelog": "# CampusHub 1.2.17\n\n稳定性与低风险性能加固。界面与交互与 1.2.16 一致，无新增入口、无视觉改动。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **开阀/报名不再被弱网重放**：HTTP 路由只在 TLS 握手失败、连接失败或域名解析失败时切换；读超时、EOF、普通 I/O 错误一律不重放。OkHttp 内部重试全部关闭，路由级决策成为唯一重试源。慧生活用 GET 开阀，因此判断不看 HTTP 方法。\n- **乐校通 WAF Cookie 轮换**：登录后自动保存并合并 `__jsluid_s`，后续响应轮换时自动更新后续请求的 Cookie 与 x-token；手动配置新 token 或退出登录时清除旧 WAF Cookie，避免 `Code:-44 用户身份失效`。\n- **PU 写操作不再假成功**：报名、签到、改密等写请求只有在响应是合法 JSON 且含 `code` 字段时才判成功；WAF 返回 HTML 或格式变化时明确报「响应格式已变化」。\n- **开水响应更快**：慧生活开阀后不再附带最多 15 个账单详情请求，历史账单 ID 改为单次列表直读；账单基线代码精简，水表基线仍在开阀时获取，停水与物理停水检测不受影响。\n- **结算只刷一次**：移除结算回调导致的重复刷新，账单、积分、微件数据统一由会话状态驱动；积分回源合并为单一触发流，任务运行中不再因版本事件重复回源；微件数据读取的节流与去重收敛到主线程调度。\n- **启动动画开关即时生效**：冷启动时异步读取设置首值，未就绪期间显示与视频首帧一致的静态图；关闭动画后不再闪播视频，首值到达前不创建主界面导航树。\n- **空闲开销收敛**：Bento 卡片抖动动画与下拉刷新旋转动画只在对应状态创建；下拉内容位移改在布局相位完成；桌宠素材可用性缓存到进程内，图片后台解码并做内存缓存。\n\n## 验证\n\n- JVM 单测 **460 例全部通过**（0 failures / 0 errors / 0 skipped）；`:app:compileDebugKotlin` 与 `:app:lintDebug` **0 Error**。\n- 静态首帧已通过 Compose Preview 出图核对，明暗背景均居中无布局变化。\n- 真水机开阀/结算、实体扫码、BLE 广播与弱网 WAF 行为以用户真机验收为准。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.17-release.apk\n```"
+  "changelog": "# CampusHub 1.2.18\n\n水控状态机竞态与开屏视觉修复。界面入口与 1.2.17 一致，仅修正暗色开屏边带与检查更新提示行为。\n\n> **这是完整版 APK**，包含未公开的校园服务适配器。\n> 公开仓库 `luckjokerwang/CampusHub` 只包含宿主壳与示例插件，两者源码不等价。\n\n## 本次更新\n\n- **洗浴双开阀竞态**：`ShowerWaterSessionCoordinator` 用 `@Synchronized claimStart()` 把「判定可启动」与「写入 Connecting」原子化。App 卡、桌面微件与 QS 磁贴同时点启动时，只会开一次阀，杜绝重复扣费风险。\n- **饮用水结算卡死**：`DrinkingWaterSessionCoordinator` 把账单轮询从监控协程中拆出，改跑在独立 `settleJob`，不再被手动停水的取消动作掐死；轮询异常或超时也由 `finally` 兜底落到已停水态，物理停水后紧跟手动停水不会再永久卡在「等待出账」。\n- **暗色开屏黑边**：开屏视频与首帧占位图底色统一锁定为品牌色，不再随主题 surface 变化。9:16 素材 contain 缩放在暗色主题下露出的两条黑边消失。\n- **检查更新双弹窗**：手动检查完成时先清掉「正在检查更新…」提示，发现新版本只由新版本弹窗呈现；点「稍后」或弹窗外同时关闭两个提示并回到 Idle，卡片不再残留「发现新版本」。\n\n## 验证\n\n- JVM 单测 **463 例全部通过**（0 failures / 0 errors / 0 skipped）；`:app:compileDebugKotlin` 与 `:app:lintDebug` **0 Error**。\n- 单测用 JDK 25 运行（本机 JDK 17 的 cacerts 为空，会在 OkHttp 构造阶段抛 `KeyStoreException`，见 `quality/release.md` §7.1）；release 用 JDK 17 + 系统 truststore 构建。\n- 真水机开阀/结算、实体扫码、BLE 广播与暗色开屏视觉以用户真机验收为准。\n\n## 安装\n\n```bash\nadb install -r CampusBox-v1.2.18-release.apk\n```"
 }
