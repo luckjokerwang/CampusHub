@@ -236,8 +236,9 @@ fun ConfigFormRenderer(
                 }
 
                 ConfigFieldType.SEARCH_SELECT -> {
+                    val displayLabel = values["${field.key}.label"]?.takeIf { it.isNotBlank() } ?: value
                     CampusReadonlyField(
-                        value = value.ifBlank { "" },
+                        value = displayLabel.ifBlank { "" },
                         label = field.label,
                         placeholder = field.placeholder ?: "点击选择",
                         onClick = {

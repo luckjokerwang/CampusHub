@@ -11,12 +11,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
+import com.campushub.app.ui.theme.CampusSurfaces.cardDepth
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -82,17 +84,9 @@ fun CampusPullRefresh(
     val currentOnRefresh by rememberUpdatedState(onRefresh)
     val interactionLocked by rememberUpdatedState(isRefreshing || completed)
 
-    // 刷新期间圆圈持续打转
-    val spin = rememberInfiniteTransition(label = "pullSpin")
-    val spinAngle by spin.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "spinAngle"
-    )
+
+    // 只在刷新/完成态创建无限动画；IDLE 下不逐帧重组。
+    val spinAngle = rememberPullSpinAngle(active = isRefreshing || completed)
 
     // 外部刷新状态驱动：进入时停在阈值位并打转，结束时显示「刷新完成」再回弹
     LaunchedEffect(isRefreshing) {
@@ -181,7 +175,7 @@ fun CampusPullRefresh(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = with(density) { pullOffset.value.toDp() }),
+                .offset { IntOffset(0, pullOffset.value.roundToInt()) },
             content = content
         )
 
@@ -198,13 +192,14 @@ fun CampusPullRefresh(
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .statusBarsPadding()
                     .padding(top = with(density) { (pullOffset.value - headerPx).toDp() }.coerceAtLeast(4.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .shadow(elevation = 3.dp, shape = CircleShape)
+                        .cardDepth(CircleShape)
                         .background(palette.surface, CircleShape)
                         .border(1.dp, palette.line, CircleShape)
                         .padding(7.dp),
@@ -231,4 +226,21 @@ fun CampusPullRefresh(
             }
         }
     }
+}
+
+/** 仅在刷新/完成态创建旋转动画；其他状态返回 0f。 */
+@Composable
+private fun rememberPullSpinAngle(active: Boolean): Float {
+    if (!active) return 0f
+    val spin = rememberInfiniteTransition(label = "pullSpin")
+    val angle by spin.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "spinAngle"
+    )
+    return angle
 }

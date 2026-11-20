@@ -53,6 +53,18 @@ class SecureStorage private constructor(private val context: Context) {
         return PluginStorage(prefs)
     }
 
+    /**
+     * 彻底清空并删除指定插件命名空间的加密存储文件（供插件卸载或物理重置使用）。
+     */
+    fun purgePlugin(pluginId: String) {
+        val safeNamespace = pluginId.replace(Regex("[^a-zA-Z0-9_]"), "_")
+        val fileName = "campushub_sec_${safeNamespace}.pref"
+        synchronized(storageLock) {
+            prefCache.remove(safeNamespace)?.edit()?.clear()?.apply()
+            deletePrefsFiles(fileName)
+        }
+    }
+
     private fun createEncryptedPrefsLocked(namespace: String): SharedPreferences {
         val fileName = "campushub_sec_${namespace}.pref"
         return try {

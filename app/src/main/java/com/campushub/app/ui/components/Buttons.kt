@@ -115,6 +115,7 @@ fun CampusTextLink(
     Box(
         modifier = modifier
             .defaultMinSize(minWidth = CampusTokens.Space.minTouch, minHeight = CampusTokens.Space.minTouch)
+            .clickableNoIndication(onClick)
             .padding(horizontal = 2.dp),
         contentAlignment = Alignment.CenterEnd
     ) {
@@ -124,9 +125,7 @@ fun CampusTextLink(
             fontWeight = FontWeight.SemiBold,
             color = color,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .clickableNoIndication(onClick)
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

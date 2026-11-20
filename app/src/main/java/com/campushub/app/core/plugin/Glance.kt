@@ -71,7 +71,8 @@ data class GlanceChipPicker(
  */
 data class GlanceSwitcher(
     val options: List<GlanceOption>,
-    val commandId: String
+    val commandId: String,
+    val title: String = "选择水机"
 )
 
 /** 一项次要明细（如「流速 1.90 L/min」）。 */

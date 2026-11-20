@@ -43,6 +43,10 @@ interface ConfigurablePlugin : CampusService {
 
     /** 清除本服务的凭据（保留设备绑定与别名）。 */
     suspend fun logout()
+    /** 清除本服务的全部本地数据（凭据、缓存、后台定时任务等）；默认调用 [logout]。 */
+    suspend fun onClearData() {
+        logout()
+    }
 }
 
 interface GlanceSource : CampusService {

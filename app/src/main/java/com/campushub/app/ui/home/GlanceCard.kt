@@ -355,7 +355,7 @@ fun GlanceCard(
         ) {
             Column(modifier = Modifier.padding(bottom = 24.dp)) {
                 Text(
-                    text = "选择水机",
+                    text = switcher.title,
                     style = MaterialTheme.typography.titleMedium,
                     color = palette.ink,
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)

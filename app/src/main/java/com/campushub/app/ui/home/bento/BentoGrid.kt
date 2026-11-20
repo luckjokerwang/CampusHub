@@ -716,13 +716,7 @@ private fun InteractiveBentoCard(
 ) {
     val palette = CampusTheme.palette
 
-    val infiniteTransition = rememberInfiniteTransition(label = "jiggle_${entry.id}")
-    val jiggleAngle by infiniteTransition.animateFloat(
-        initialValue = -0.75f,
-        targetValue = 0.75f,
-        animationSpec = infiniteRepeatable(animation = tween(190), repeatMode = RepeatMode.Reverse),
-        label = "jiggleAngle"
-    )
+    val jiggleAngle = rememberJiggleAngle(isEditMode, entry.id)
 
     // 按下反馈：卡片自己就是可点区域，缩一点点比涟漪更「跟手」
     var pressed by remember { mutableStateOf(false) }
@@ -932,4 +926,18 @@ private fun InteractiveBentoCard(
             }
         }
     }
+}
+
+/** 只在编辑态创建无限动画；非编辑态返回常量 0f，不产生逐帧重组。 */
+@Composable
+private fun rememberJiggleAngle(enabled: Boolean, id: String): Float {
+    if (!enabled) return 0f
+    val transition = rememberInfiniteTransition(label = "jiggle_$id")
+    val angle by transition.animateFloat(
+        initialValue = -0.75f,
+        targetValue = 0.75f,
+        animationSpec = infiniteRepeatable(animation = tween(190), repeatMode = RepeatMode.Reverse),
+        label = "jiggleAngle"
+    )
+    return angle
 }

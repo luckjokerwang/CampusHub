@@ -171,6 +171,18 @@ interface WaterControlService : CampusService {
     /** 历史账单，[limit] 为条数上限。 */
     suspend fun billingHistory(limit: Int): ServiceResult<List<WaterBillingRecord>>
 
+    /**
+     * 最近已结算账单 ID 集合（不产生详情请求）。
+     *
+     * 默认从 [billingHistory] 派生，保持其他实现源码兼容；
+     * 支持列表直读的服务应覆写以避免 N+1 明细请求。
+     */
+    suspend fun recentBillIds(limit: Int): Set<String> =
+        when (val result = billingHistory(limit)) {
+            is ServiceResult.Ok -> result.value.map { it.id }.toSet()
+            else -> emptySet()
+        }
+
     /** 查找 [sinceMillis] 之后新产生、且不在 [excludeIds] 内的已结算账单 id。 */
     suspend fun findSettledBill(sinceMillis: Long, excludeIds: Set<String>): String?
 

@@ -45,6 +45,16 @@ object ServiceRegistry {
     /** 按 id 取服务；未注册时为 null。 */
     fun get(id: String): CampusService? = byId[id]
 
+    /** 注销指定服务；若被注销的是当前激活的水控服务，自动回退到剩余首个水控服务。 */
+    @Synchronized
+    fun unregister(id: String): CampusService? {
+        val removed = byId.remove(id) ?: return null
+        if (activeWaterService?.id == id) {
+            activeWaterService = byId.values.filterIsInstance<WaterControlService>().firstOrNull()
+        }
+        return removed
+    }
+
     @Synchronized
     fun clear() {
         byId.clear()

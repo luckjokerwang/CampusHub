@@ -66,8 +66,9 @@ fun UnboundStrip(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            val cleanDesc = description.removePrefix("未接入").removePrefix("·").trim()
             Text(
-                text = "未接入 · $description",
+                text = if (cleanDesc.isEmpty() || cleanDesc == "未登录") "未接入" else "未接入 · $cleanDesc",
                 style = MaterialTheme.typography.labelSmall,
                 color = palette.ink2,
                 maxLines = 1,

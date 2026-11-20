@@ -1,6 +1,7 @@
 package com.campushub.app.ui.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -157,7 +158,13 @@ private fun KpiSection(
                     Column(
                         modifier = Modifier
                             .weight(1f)
+                            .cardDepth(CampusTokens.Shapes.small)
                             .background(palette.surface, CampusTokens.Shapes.small)
+                            .border(
+                                width = 1.dp,
+                                color = palette.line.copy(alpha = CampusTokens.Depth.borderAlpha),
+                                shape = CampusTokens.Shapes.small
+                            )
                             .padding(horizontal = 11.dp, vertical = 10.dp)
                     ) {
                         Text(
@@ -282,9 +289,9 @@ private fun ChartSection(
                 val isSelected = index == selectedIndex
                 Text(
                     text = bar.label,
-                    fontSize = 8.5.sp,
+                    fontSize = 10.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isSelected) accent.color() else palette.ink3,
+                    color = if (isSelected) accent.color() else palette.ink2,
                     maxLines = 1,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -468,12 +475,12 @@ private fun FormSection(
                         val label = currentOption?.label ?: currentValue.ifBlank { "点击选择" }
                         ListRow(
                             title = field.label,
-                            subtitle = field.subtitle
+                            subtitle = field.subtitle,
+                            onClick = { activeSelectField = field }
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                modifier = Modifier.clickableNoIndication { activeSelectField = field }
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
                                 Text(
                                     text = label,

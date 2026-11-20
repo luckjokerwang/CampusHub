@@ -8,6 +8,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
 
 /**
@@ -30,8 +31,9 @@ object CampusSurfaces {
     @ReadOnlyComposable
     fun pageBrush(): Brush {
         val palette = CampusTheme.palette
+        val topColor = lerp(palette.canvas, palette.waterSoft, CampusTokens.Depth.pageTintAlpha)
         return Brush.verticalGradient(
-            0f to palette.waterSoft.copy(alpha = CampusTokens.Depth.pageTintAlpha),
+            0f to topColor,
             CampusTokens.Depth.pageTintStop to palette.canvas,
             1f to palette.canvas
         )
