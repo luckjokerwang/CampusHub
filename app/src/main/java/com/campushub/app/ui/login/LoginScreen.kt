@@ -1,5 +1,6 @@
 package com.campushub.app.ui.login
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.campushub.app.core.plugin.ConfigurablePlugin
 import com.campushub.app.ui.components.CampusButton
@@ -69,14 +71,26 @@ fun LoginScreen(
     )
     val state by viewModel.state.collectAsStateWithLifecycle()
     val group = viewModel.groups.getOrNull(state.selectedGroupIndex) ?: return
+    var hasNavigatedBack by rememberSaveable(viewModelKey) { mutableStateOf(false) }
+
+    fun navigateBackOnce(notifyLoggedIn: Boolean) {
+        if (hasNavigatedBack) return
+        hasNavigatedBack = true
+        // 先退出登录页，再刷新首页/插件页，避免刷新状态和退场动画互相抢占；
+        // hasNavigatedBack 确保退场动画窗口期内「立即返回 / 1.5s 定时器 / 返回键」最多只触发一次。
+        onBack()
+        if (notifyLoggedIn) onLoggedIn()
+    }
+
+    BackHandler(enabled = !hasNavigatedBack) {
+        navigateBackOnce(notifyLoggedIn = state.phase == LoginPhase.SUCCESS)
+    }
 
     // 成功：1.5 秒后自动返回
-    LaunchedEffect(state.phase) {
-        if (state.phase == LoginPhase.SUCCESS) {
+    LaunchedEffect(state.phase, hasNavigatedBack) {
+        if (state.phase == LoginPhase.SUCCESS && !hasNavigatedBack) {
             delay(1_500)
-            // 先退出登录页，再刷新首页/插件页，避免刷新状态和退场动画互相抢占。
-            onBack()
-            onLoggedIn()
+            navigateBackOnce(notifyLoggedIn = true)
         }
     }
 
@@ -85,7 +99,7 @@ fun LoginScreen(
                 .pageBackground()) {
         PageHeader(
             title = if (addAccount) "添加账号" else "登录",
-            onBack = onBack,
+            onBack = { navigateBackOnce(notifyLoggedIn = state.phase == LoginPhase.SUCCESS) },
             action = if (state.phase == LoginPhase.SUBMITTING) {
                 com.campushub.app.core.plugin.PageAction("取消", "cancel")
             } else {
@@ -167,10 +181,7 @@ fun LoginScreen(
                     }
                     CampusButton(
                         label = "立即返回",
-                        onClick = {
-                            onBack()
-                            onLoggedIn()
-                        },
+                        onClick = { navigateBackOnce(notifyLoggedIn = true) },
                         size = ButtonSize.LG,
                         modifier = Modifier.fillMaxWidth()
                     )

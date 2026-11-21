@@ -4,8 +4,7 @@ package com.campushub.app.core.plugin
  * 登录/配置表单的声明式描述。
  *
  * 一个插件可以有多个分组（如「账号登录 / 设备绑定 / 高级选项」），
- * 宿主用同一个页面渲染所有插件。
- * 前六种类型与 `packages/sdk/src/types.ts` 的 `ConfigFieldSchema.type` 对应。
+ * 宿主用同一个页面渲染所有插件；共九种声明式字段类型。
  */
 enum class ConfigFieldType {
     TEXT,

@@ -33,6 +33,12 @@ interface CampusService {
      * 不需要改宿主 UI。
      */
     val manifest: PluginManifest
+
+    /** 插件被用户停用时调用（暂停后台任务/闹钟，保留凭据与配置）。 */
+    suspend fun onDeactivate() {}
+
+    /** 插件被用户重新启用时调用（按需恢复后台调度）。 */
+    suspend fun onActivate() {}
 }
 
 /**

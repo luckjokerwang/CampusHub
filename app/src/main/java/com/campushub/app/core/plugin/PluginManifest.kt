@@ -16,10 +16,11 @@ enum class PluginAccent { WATER, BATH, CREDIT, SCORE, NEUTRAL }
 /**
  * 插件来源。
  *
- * [USER] 只是为将来的「上传 manifest.json」预留；当前没有任何加载器实现，
- * 所有已注册服务都是 [BUILTIN]。
+ * - [BUILTIN]：随主安装包内置的核心服务，不可卸载；
+ * - [OFFICIAL]：官方签名插件源分发的声明式/扩展插件；
+ * - [USER]：仅 Debug 构建开放的本地导入调试包。
  */
-enum class PluginSource { BUILTIN, USER }
+enum class PluginSource { BUILTIN, OFFICIAL, USER }
 
 /**
  * 一张卡片的声明。
@@ -46,6 +47,10 @@ data class CardSpec(
  *
  * @param id 与服务 `CampusService.id` 相同，也是 `SecureStorage.forPlugin(id)` 的命名空间。
  * @param version 展示用版本号（如 `v3.1.9`），无版本概念时为 null。
+ * @param author 提供方/作者名称。
+ * @param allowedHosts 该服务通信的官方域名白名单（强制 HTTPS 直连）。
+ * @param permissions 所需系统与设备能力说明。
+ * @param capabilities 向宿主声明提供的核心能力列表。
  */
 data class PluginManifest(
     val id: String,
@@ -55,5 +60,9 @@ data class PluginManifest(
     val accent: PluginAccent,
     val version: String? = null,
     val source: PluginSource = PluginSource.BUILTIN,
-    val cards: List<CardSpec>
+    val cards: List<CardSpec>,
+    val author: String = "CampusHub",
+    val allowedHosts: List<String> = emptyList(),
+    val permissions: List<String> = emptyList(),
+    val capabilities: List<String> = emptyList()
 )
