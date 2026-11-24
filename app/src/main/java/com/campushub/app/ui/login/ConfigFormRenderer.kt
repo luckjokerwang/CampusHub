@@ -94,7 +94,7 @@ fun ConfigFormRenderer(
         scope.launch {
             searchLoading = true
             searchMessage = null
-            when (val result = plugin.searchOptions(group.id, field.key, query)) {
+            when (val result = plugin.searchOptions(group.id, field.key, query, values)) {
                 is ServiceResult.Ok -> searchOptions = result.value
                 is ServiceResult.NetworkError -> {
                     searchOptions = emptyList()
@@ -236,13 +236,20 @@ fun ConfigFormRenderer(
                 }
 
                 ConfigFieldType.SEARCH_SELECT -> {
+                    val parentField = field.dependsOn?.let { dep -> group.fields.firstOrNull { it.key == dep } }
+                    val parentReady = parentField == null || values[parentField.key].orEmpty().isNotBlank()
                     val displayLabel = values["${field.key}.label"]?.takeIf { it.isNotBlank() } ?: value
+                    val hintText = if (!parentReady) {
+                        "请先选择${parentField!!.label}"
+                    } else {
+                        field.placeholder ?: "点击选择"
+                    }
                     CampusReadonlyField(
-                        value = displayLabel.ifBlank { "" },
+                        value = if (parentReady) displayLabel.ifBlank { "" } else "",
                         label = field.label,
-                        placeholder = field.placeholder ?: "点击选择",
+                        placeholder = hintText,
                         onClick = {
-                            if (enabled) {
+                            if (enabled && parentReady) {
                                 searchField = field
                                 searchQuery = ""
                                 searchOptions = emptyList()

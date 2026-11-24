@@ -153,42 +153,50 @@ private fun KpiSection(
             }
         }
         if (items.isNotEmpty()) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items.forEach { item ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .cardDepth(CampusTokens.Shapes.small)
-                            .background(palette.surface, CampusTokens.Shapes.small)
-                            .border(
-                                width = 1.dp,
-                                color = palette.line.copy(alpha = CampusTokens.Depth.borderAlpha),
-                                shape = CampusTokens.Shapes.small
-                            )
-                            .padding(horizontal = 11.dp, vertical = 10.dp)
-                    ) {
-                        Text(
-                            text = item.label,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = palette.ink3
-                        )
-                        Text(
-                            text = item.value,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontFeatureSettings = "tnum"
-                            ),
-                            fontWeight = FontWeight.Bold,
-                            color = palette.ink,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        if (!item.unit.isNullOrBlank()) {
-                            Text(
-                                text = item.unit,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = palette.ink2,
-                                maxLines = 1
-                            )
+            val rows = if (items.size <= 3) listOf(items) else items.chunked(2)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                rows.forEach { rowItems ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        rowItems.forEach { item ->
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .cardDepth(CampusTokens.Shapes.small)
+                                    .background(palette.surface, CampusTokens.Shapes.small)
+                                    .border(
+                                        width = 1.dp,
+                                        color = palette.line.copy(alpha = CampusTokens.Depth.borderAlpha),
+                                        shape = CampusTokens.Shapes.small
+                                    )
+                                    .padding(horizontal = 11.dp, vertical = 10.dp)
+                            ) {
+                                Text(
+                                    text = item.label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = palette.ink3
+                                )
+                                Text(
+                                    text = item.value,
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontFeatureSettings = "tnum"
+                                    ),
+                                    fontWeight = FontWeight.Bold,
+                                    color = palette.ink,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                if (!item.unit.isNullOrBlank()) {
+                                    Text(
+                                        text = item.unit,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = palette.ink2,
+                                        maxLines = 1
+                                    )
+                                }
+                            }
+                        }
+                        if (rows.size > 1 && rowItems.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }

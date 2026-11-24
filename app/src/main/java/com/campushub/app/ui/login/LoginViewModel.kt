@@ -85,11 +85,35 @@ class LoginViewModel(
         val group = groups.getOrNull(_state.value.selectedGroupIndex)
         val smsKey = group?.fields?.firstOrNull { it.type == ConfigFieldType.SMS_CODE }?.key
         val phoneChanged = key == "phone"
+        val prevValue = _state.value.values[key]
+        val clearedDependents = if (group != null && !key.endsWith(".label") && prevValue != value) {
+            val dirty = mutableSetOf(key)
+            var grew = true
+            while (grew) {
+                grew = false
+                group.fields.forEach { field ->
+                    val parent = field.dependsOn
+                    if (parent != null && parent in dirty && field.key !in dirty) {
+                        dirty += field.key
+                        grew = true
+                    }
+                }
+            }
+            dirty.remove(key)
+            buildMap {
+                dirty.forEach { depKey ->
+                    put(depKey, "")
+                    put("$depKey.label", "")
+                }
+            }
+        } else {
+            emptyMap()
+        }
         _state.update {
             it.copy(
-                values = it.values + (key to value) +
+                values = it.values + (key to value) + clearedDependents +
                     if (phoneChanged && smsKey != null) mapOf(smsKey to "") else emptyMap(),
-                fieldErrors = it.fieldErrors - key,
+                fieldErrors = it.fieldErrors - key - clearedDependents.keys,
                 smsCooldown = if (phoneChanged) 0 else it.smsCooldown
                 // 保留 errorText / phase：错误提示至少留到下一次提交或主动刷新，避免闪一下就消失。
             )

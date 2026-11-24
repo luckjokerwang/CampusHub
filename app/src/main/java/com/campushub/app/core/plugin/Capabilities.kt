@@ -38,6 +38,14 @@ interface ConfigurablePlugin : CampusService {
         query: String
     ): ServiceResult<List<ConfigOption>> = unsupported()
 
+    /** 支持级联前置字段值的异步选项（默认委托三参版本，保持已有插件兼容）。 */
+    suspend fun searchOptions(
+        groupId: String,
+        fieldKey: String,
+        query: String,
+        values: Map<String, String>
+    ): ServiceResult<List<ConfigOption>> = searchOptions(groupId, fieldKey, query)
+
     /** 提交本组表单，成功返回提示文案。 */
     suspend fun submit(groupId: String, values: Map<String, String>): ServiceResult<String>
 
